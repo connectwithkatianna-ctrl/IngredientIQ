@@ -75,7 +75,7 @@ What we tried before landing on the keyboard extension as the primary integratio
 
 | Approach | Outcome |
 |---|---|
-| Chrome extension | Works only for MacrosFirst's web app — not the native iOS app most people use. |
+| Chrome extension | No free version available for MacrosFirst's web app — not the native iOS app most people use. |
 | Camera interception inside MacrosFirst | **Not possible.** iOS sandboxes apps from each other; there's no supported API for one app to intercept another's camera session. Would require jailbreaking and hooking a third-party binary — ruled out. |
 | Siri Shortcuts "Barcode Scan" action | Built and tested live. MacrosFirst does expose this action, but it's a one-way launch into MacrosFirst's own "Add Food" screen — no data is handed back to intercept before logging. |
 | MacrosFirst partner API | Real and exists (nutrition history, food log data) — requires direct approval from MacrosFirst. Open path for a future "warn after logging" flow. |
