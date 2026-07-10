@@ -1,0 +1,371 @@
+/* IngredientIQ Warning Styles — injected into nutrition app pages */
+
+/* ── Modal overlay ────────────────────────────────────────────── */
+.iiq-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2147483647;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: iiq-fade-in 0.18s ease;
+}
+
+@keyframes iiq-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.iiq-modal-sheet {
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: iiq-slide-up 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  .iiq-modal-sheet {
+    background: #1c1c1e;
+    color: #f5f5f7;
+  }
+}
+
+@keyframes iiq-slide-up {
+  from { transform: translateY(30px); opacity: 0.8; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.iiq-modal-handle {
+  width: 36px;
+  height: 4px;
+  background: #d1d1d6;
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+
+/* ── Modal header ──────────────────────────────────────────────── */
+.iiq-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.iiq-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iiq-modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.iiq-modal-sub {
+  font-size: 11px;
+  color: #8e8e93;
+}
+
+/* ── Risk bar ──────────────────────────────────────────────────── */
+.iiq-risk-bar-wrap {
+  margin-bottom: 12px;
+}
+
+.iiq-risk-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #8e8e93;
+  margin-bottom: 4px;
+}
+
+.iiq-risk-track {
+  height: 6px;
+  background: #e5e5ea;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .iiq-risk-track { background: #3a3a3c; }
+}
+
+.iiq-risk-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* ── Ingredient list ───────────────────────────────────────────── */
+.iiq-ing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.iiq-ing-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 0.5px solid transparent;
+}
+
+.iiq-tier-banned  { background: #fff1f0; border-color: #ffa39e; }
+.iiq-tier-allergen{ background: #fffbe6; border-color: #ffe58f; }
+.iiq-tier-concern { background: #fff7e6; border-color: #ffd591; }
+.iiq-tier-review  { background: #e6f7ff; border-color: #91d5ff; }
+.iiq-tier-secret  { background: #f9f0ff; border-color: #d3adf7; }
+
+.iiq-ing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.iiq-ing-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.iiq-ing-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 8px;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.iiq-badge-banned  { background: #fff1f0; color: #cf1322; }
+.iiq-badge-allergen{ background: #fffbe6; color: #874d00; }
+.iiq-badge-concern { background: #fff7e6; color: #ad4e00; }
+.iiq-badge-review  { background: #e6f7ff; color: #0050b3; }
+.iiq-badge-secret  { background: #f9f0ff; color: #531dab; }
+
+.iiq-ing-warn {
+  font-size: 11px;
+  color: #595959;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .iiq-ing-warn { color: #aeaeb2; }
+}
+
+/* ── Modal actions ─────────────────────────────────────────────── */
+.iiq-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.iiq-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.iiq-btn:hover { opacity: 0.82; }
+.iiq-btn:active { transform: scale(0.97); }
+
+.iiq-btn-dismiss {
+  background: #f2f2f7;
+  color: #1c1c1e;
+}
+
+.iiq-btn-alt {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.iiq-btn-log {
+  background: #1c1c1e;
+  color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .iiq-btn-dismiss { background: #3a3a3c; color: #f5f5f7; }
+  .iiq-btn-log     { background: #f5f5f7; color: #1c1c1e; }
+}
+
+/* ── Modal footer ──────────────────────────────────────────────── */
+.iiq-modal-footer {
+  text-align: center;
+  padding-top: 4px;
+}
+
+.iiq-snooze {
+  font-size: 11px;
+  color: #8e8e93;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.iiq-snooze:hover { color: #636366; }
+
+/* ── Banner ────────────────────────────────────────────────────── */
+#iiq-banner-slot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2147483646;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.iiq-banner {
+  width: 100%;
+  animation: iiq-slide-down 0.2s ease;
+}
+
+@keyframes iiq-slide-down {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.iiq-banner-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.iiq-banner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.iiq-banner-text {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.iiq-banner-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.iiq-banner-expand,
+.iiq-banner-log,
+.iiq-banner-dismiss {
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.iiq-banner-expand { text-decoration: underline; }
+
+.iiq-banner-log {
+  background: #1c1c1e;
+  color: #fff;
+  border-radius: 8px;
+  padding: 3px 10px;
+}
+
+.iiq-banner-dismiss {
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.6;
+  padding: 0 4px;
+}
+
+.iiq-banner-detail {
+  padding: 6px 12px 8px;
+}
+
+.iiq-banner-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.iiq-banner-pill {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ── Analyzing toast ───────────────────────────────────────────── */
+.iiq-analyzing-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 0.5px solid #e5e5ea;
+  border-radius: 20px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1c1c1e;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  z-index: 2147483645;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  animation: iiq-fade-in 0.15s ease;
+}
+
+.iiq-toast-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e5e5ea;
+  border-top-color: #1c1c1e;
+  border-radius: 50%;
+  animation: iiq-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes iiq-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-color-scheme: dark) {
+  .iiq-analyzing-toast {
+    background: #2c2c2e;
+    border-color: #3a3a3c;
+    color: #f5f5f7;
+  }
+  .iiq-toast-spinner {
+    border-color: #3a3a3c;
+    border-top-color: #f5f5f7;
+  }
+}

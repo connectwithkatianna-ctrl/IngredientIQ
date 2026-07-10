@@ -1,0 +1,828 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B319A782FFFF5A000BD24C7 /* IngredientIQKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3B319A712FFFF5A000BD24C7 /* IngredientIQKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3B319A87300003A300BD24C7 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A86300003A300BD24C7 /* Models.swift */; };
+		3B319A89300003BC00BD24C7 /* RiskScoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A88300003BC00BD24C7 /* RiskScoring.swift */; };
+		3B319A8B300003D000BD24C7 /* IngredientDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A8A300003D000BD24C7 /* IngredientDatabase.swift */; };
+		3B319A8D300003EC00BD24C7 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A8C300003EC00BD24C7 /* Settings.swift */; };
+		3B319A8F3000040000BD24C7 /* ingredients.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B319A8E3000040000BD24C7 /* ingredients.json */; };
+		87AB8AD56DEC69BAEA1188A9 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A86300003A300BD24C7 /* Models.swift */; };
+		647D4B1B71C81F9BFEE56DB2 /* RiskScoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A88300003BC00BD24C7 /* RiskScoring.swift */; };
+		974C045CCC713153AA2907AF /* IngredientDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A8A300003D000BD24C7 /* IngredientDatabase.swift */; };
+		FE5181E159FECA1D78828856 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B319A8C300003EC00BD24C7 /* Settings.swift */; };
+		7BEEDA0B701E9DAEF635EE71 /* ingredients.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B319A8E3000040000BD24C7 /* ingredients.json */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3B319A462FFFEF7200BD24C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B319A2B2FFFEF6F00BD24C7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3B319A322FFFEF6F00BD24C7;
+			remoteInfo = IngredientIQ;
+		};
+		3B319A502FFFEF7200BD24C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B319A2B2FFFEF6F00BD24C7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3B319A322FFFEF6F00BD24C7;
+			remoteInfo = IngredientIQ;
+		};
+		3B319A762FFFF5A000BD24C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B319A2B2FFFEF6F00BD24C7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3B319A702FFFF5A000BD24C7;
+			remoteInfo = IngredientIQKeyboard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3B319A7D2FFFF5A000BD24C7 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				3B319A782FFFF5A000BD24C7 /* IngredientIQKeyboard.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3B319A332FFFEF6F00BD24C7 /* IngredientIQ.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IngredientIQ.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B319A452FFFEF7200BD24C7 /* IngredientIQTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IngredientIQTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B319A4F2FFFEF7200BD24C7 /* IngredientIQUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IngredientIQUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B319A712FFFF5A000BD24C7 /* IngredientIQKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IngredientIQKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B319A86300003A300BD24C7 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		3B319A88300003BC00BD24C7 /* RiskScoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskScoring.swift; sourceTree = "<group>"; };
+		3B319A8A300003D000BD24C7 /* IngredientDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientDatabase.swift; sourceTree = "<group>"; };
+		3B319A8C300003EC00BD24C7 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		3B319A8E3000040000BD24C7 /* ingredients.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ingredients.json; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3B319A792FFFF5A000BD24C7 /* Exceptions for "IngredientIQKeyboard" folder in "IngredientIQKeyboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3B319A702FFFF5A000BD24C7 /* IngredientIQKeyboard */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3B319A352FFFEF6F00BD24C7 /* IngredientIQ */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = IngredientIQ;
+			sourceTree = "<group>";
+		};
+		3B319A482FFFEF7200BD24C7 /* IngredientIQTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = IngredientIQTests;
+			sourceTree = "<group>";
+		};
+		3B319A522FFFEF7200BD24C7 /* IngredientIQUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = IngredientIQUITests;
+			sourceTree = "<group>";
+		};
+		3B319A722FFFF5A000BD24C7 /* IngredientIQKeyboard */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3B319A792FFFF5A000BD24C7 /* Exceptions for "IngredientIQKeyboard" folder in "IngredientIQKeyboard" target */,
+			);
+			path = IngredientIQKeyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3B319A302FFFEF6F00BD24C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A422FFFEF7200BD24C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A4C2FFFEF7200BD24C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A6E2FFFF5A000BD24C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B319A2A2FFFEF6F00BD24C7 = {
+			isa = PBXGroup;
+			children = (
+				3B319A352FFFEF6F00BD24C7 /* IngredientIQ */,
+				3B319A482FFFEF7200BD24C7 /* IngredientIQTests */,
+				3B319A522FFFEF7200BD24C7 /* IngredientIQUITests */,
+				3B319A722FFFF5A000BD24C7 /* IngredientIQKeyboard */,
+				3B319A342FFFEF6F00BD24C7 /* Products */,
+				3B319A86300003A300BD24C7 /* Models.swift */,
+				3B319A88300003BC00BD24C7 /* RiskScoring.swift */,
+				3B319A8A300003D000BD24C7 /* IngredientDatabase.swift */,
+				3B319A8C300003EC00BD24C7 /* Settings.swift */,
+				3B319A8E3000040000BD24C7 /* ingredients.json */,
+			);
+			sourceTree = "<group>";
+		};
+		3B319A342FFFEF6F00BD24C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B319A332FFFEF6F00BD24C7 /* IngredientIQ.app */,
+				3B319A452FFFEF7200BD24C7 /* IngredientIQTests.xctest */,
+				3B319A4F2FFFEF7200BD24C7 /* IngredientIQUITests.xctest */,
+				3B319A712FFFF5A000BD24C7 /* IngredientIQKeyboard.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3B319A322FFFEF6F00BD24C7 /* IngredientIQ */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B319A592FFFEF7200BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQ" */;
+			buildPhases = (
+				3B319A2F2FFFEF6F00BD24C7 /* Sources */,
+				3B319A302FFFEF6F00BD24C7 /* Frameworks */,
+				3B319A312FFFEF6F00BD24C7 /* Resources */,
+				3B319A7D2FFFF5A000BD24C7 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3B319A772FFFF5A000BD24C7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3B319A352FFFEF6F00BD24C7 /* IngredientIQ */,
+			);
+			name = IngredientIQ;
+			packageProductDependencies = (
+			);
+			productName = IngredientIQ;
+			productReference = 3B319A332FFFEF6F00BD24C7 /* IngredientIQ.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3B319A442FFFEF7200BD24C7 /* IngredientIQTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B319A5C2FFFEF7200BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQTests" */;
+			buildPhases = (
+				3B319A412FFFEF7200BD24C7 /* Sources */,
+				3B319A422FFFEF7200BD24C7 /* Frameworks */,
+				3B319A432FFFEF7200BD24C7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3B319A472FFFEF7200BD24C7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3B319A482FFFEF7200BD24C7 /* IngredientIQTests */,
+			);
+			name = IngredientIQTests;
+			packageProductDependencies = (
+			);
+			productName = IngredientIQTests;
+			productReference = 3B319A452FFFEF7200BD24C7 /* IngredientIQTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3B319A4E2FFFEF7200BD24C7 /* IngredientIQUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B319A5F2FFFEF7200BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQUITests" */;
+			buildPhases = (
+				3B319A4B2FFFEF7200BD24C7 /* Sources */,
+				3B319A4C2FFFEF7200BD24C7 /* Frameworks */,
+				3B319A4D2FFFEF7200BD24C7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3B319A512FFFEF7200BD24C7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3B319A522FFFEF7200BD24C7 /* IngredientIQUITests */,
+			);
+			name = IngredientIQUITests;
+			packageProductDependencies = (
+			);
+			productName = IngredientIQUITests;
+			productReference = 3B319A4F2FFFEF7200BD24C7 /* IngredientIQUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		3B319A702FFFF5A000BD24C7 /* IngredientIQKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B319A7A2FFFF5A000BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQKeyboard" */;
+			buildPhases = (
+				3B319A6D2FFFF5A000BD24C7 /* Sources */,
+				3B319A6E2FFFF5A000BD24C7 /* Frameworks */,
+				3B319A6F2FFFF5A000BD24C7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3B319A722FFFF5A000BD24C7 /* IngredientIQKeyboard */,
+			);
+			name = IngredientIQKeyboard;
+			packageProductDependencies = (
+			);
+			productName = IngredientIQKeyboard;
+			productReference = 3B319A712FFFF5A000BD24C7 /* IngredientIQKeyboard.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3B319A2B2FFFEF6F00BD24C7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					3B319A322FFFEF6F00BD24C7 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					3B319A442FFFEF7200BD24C7 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 3B319A322FFFEF6F00BD24C7;
+					};
+					3B319A4E2FFFEF7200BD24C7 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 3B319A322FFFEF6F00BD24C7;
+					};
+					3B319A702FFFF5A000BD24C7 = {
+						CreatedOnToolsVersion = 26.3;
+						LastSwiftMigration = 2630;
+					};
+				};
+			};
+			buildConfigurationList = 3B319A2E2FFFEF6F00BD24C7 /* Build configuration list for PBXProject "IngredientIQ" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3B319A2A2FFFEF6F00BD24C7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3B319A342FFFEF6F00BD24C7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3B319A322FFFEF6F00BD24C7 /* IngredientIQ */,
+				3B319A442FFFEF7200BD24C7 /* IngredientIQTests */,
+				3B319A4E2FFFEF7200BD24C7 /* IngredientIQUITests */,
+				3B319A702FFFF5A000BD24C7 /* IngredientIQKeyboard */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3B319A312FFFEF6F00BD24C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B319A8F3000040000BD24C7 /* ingredients.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A432FFFEF7200BD24C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A4D2FFFEF7200BD24C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A6F2FFFF5A000BD24C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BEEDA0B701E9DAEF635EE71 /* ingredients.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B319A2F2FFFEF6F00BD24C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B319A8B300003D000BD24C7 /* IngredientDatabase.swift in Sources */,
+				3B319A87300003A300BD24C7 /* Models.swift in Sources */,
+				3B319A89300003BC00BD24C7 /* RiskScoring.swift in Sources */,
+				3B319A8D300003EC00BD24C7 /* Settings.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A412FFFEF7200BD24C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A4B2FFFEF7200BD24C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B319A6D2FFFF5A000BD24C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				87AB8AD56DEC69BAEA1188A9 /* Models.swift in Sources */,
+				647D4B1B71C81F9BFEE56DB2 /* RiskScoring.swift in Sources */,
+				974C045CCC713153AA2907AF /* IngredientDatabase.swift in Sources */,
+				FE5181E159FECA1D78828856 /* Settings.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3B319A472FFFEF7200BD24C7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3B319A322FFFEF6F00BD24C7 /* IngredientIQ */;
+			targetProxy = 3B319A462FFFEF7200BD24C7 /* PBXContainerItemProxy */;
+		};
+		3B319A512FFFEF7200BD24C7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3B319A322FFFEF6F00BD24C7 /* IngredientIQ */;
+			targetProxy = 3B319A502FFFEF7200BD24C7 /* PBXContainerItemProxy */;
+		};
+		3B319A772FFFF5A000BD24C7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3B319A702FFFF5A000BD24C7 /* IngredientIQKeyboard */;
+			targetProxy = 3B319A762FFFF5A000BD24C7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3B319A572FFFEF7200BD24C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3B319A582FFFEF7200BD24C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		3B319A5A2FFFEF7200BD24C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = IngredientIQ/IngredientIQ.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQ;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		3B319A5B2FFFEF7200BD24C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = IngredientIQ/IngredientIQ.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQ;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		3B319A5D2FFFEF7200BD24C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 15.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IngredientIQ.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IngredientIQ";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		3B319A5E2FFFEF7200BD24C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 15.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IngredientIQ.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IngredientIQ";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		3B319A602FFFEF7200BD24C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 15.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = IngredientIQ;
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		3B319A612FFFEF7200BD24C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 15.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = IngredientIQ;
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		3B319A7B2FFFF5A000BD24C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IngredientIQKeyboard/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IngredientIQKeyboard;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQ.IngredientIQKeyboard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "IngredientIQKeyboard/IngredientIQKeyboard-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3B319A7C2FFFF5A000BD24C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8K3HAKHZ52;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IngredientIQKeyboard/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IngredientIQKeyboard;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.katianna.IngredientIQ.IngredientIQKeyboard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "IngredientIQKeyboard/IngredientIQKeyboard-Bridging-Header.h";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B319A2E2FFFEF6F00BD24C7 /* Build configuration list for PBXProject "IngredientIQ" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B319A572FFFEF7200BD24C7 /* Debug */,
+				3B319A582FFFEF7200BD24C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B319A592FFFEF7200BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQ" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B319A5A2FFFEF7200BD24C7 /* Debug */,
+				3B319A5B2FFFEF7200BD24C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B319A5C2FFFEF7200BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B319A5D2FFFEF7200BD24C7 /* Debug */,
+				3B319A5E2FFFEF7200BD24C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B319A5F2FFFEF7200BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B319A602FFFEF7200BD24C7 /* Debug */,
+				3B319A612FFFEF7200BD24C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B319A7A2FFFF5A000BD24C7 /* Build configuration list for PBXNativeTarget "IngredientIQKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B319A7B2FFFF5A000BD24C7 /* Debug */,
+				3B319A7C2FFFF5A000BD24C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3B319A2B2FFFEF6F00BD24C7 /* Project object */;
+}

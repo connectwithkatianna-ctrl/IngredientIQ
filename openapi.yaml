@@ -1,0 +1,1349 @@
+openapi: 3.1.0
+
+info:
+  title: IngredientIQ API
+  version: 1.0.0
+  description: |
+    FDA, FSIS, and EWG-sourced food ingredient safety classification API.
+
+    Accepts raw ingredient strings (as they appear on food labels) or product UPC/EAN
+    barcodes and returns tier-classified safety data, allergen alerts, risk scores,
+    and full regulatory citations.
+
+    ## Data sources
+    - **FDA** — 21 CFR food additive status list, GRAS inventory, banned substances (Part 189),
+      post-market review program (2025), Closer to Zero initiative
+    - **FSIS** — Directive 7230.1 (Jan 2024): Big 9 allergen program, public health concern
+      ingredients (sulfites, MSG, nitrates, tartrazine)
+    - **EWG** — Secret GRAS report (March 2026): 111+ self-affirmed substances with no FDA review
+
+    ## Classification tiers
+    | Tier | Value | Risk weight |
+    |------|-------|-------------|
+    | Banned / revoked | `banned` | 100 |
+    | Big 9 allergen | `allergen` | 80 |
+    | High concern | `concern` | 60 |
+    | Under FDA review | `review` | 40 |
+    | Secret GRAS | `secret_gras` | 35 |
+    | GRAS / approved | `safe` | 0 |
+
+    ## Authentication
+    All production requests require a Bearer token. Sandbox endpoints require no auth.
+
+    ## Rate limits
+    Rate limit information is returned in every response via headers:
+    `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+
+  contact:
+    name: IngredientIQ Developer Support
+    email: dev@ingredientiq.io
+    url: https://docs.ingredientiq.io
+
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+  termsOfService: https://ingredientiq.io/terms
+
+servers:
+  - url: https://api.ingredientiq.io/v1
+    description: Production
+  - url: https://sandbox.ingredientiq.io/v1
+    description: Sandbox (no auth required — returns mock data)
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Analysis
+    description: Ingredient and product safety analysis endpoints
+  - name: Ingredients
+    description: Ingredient database — search and individual record retrieval
+  - name: Reference
+    description: Tier definitions, database metadata, and version info
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PATHS
+# ─────────────────────────────────────────────────────────────────────────────
+
+paths:
+
+  # ── POST /analyze ──────────────────────────────────────────────────────────
+
+  /analyze:
+    post:
+      operationId: analyzeIngredients
+      summary: Analyze a list of ingredients
+      description: |
+        Accepts an array of raw ingredient strings exactly as they appear on a food label
+        and returns a full safety classification for each ingredient, plus an aggregate
+        risk score and flag set for the product.
+
+        Ingredient strings are normalized (case-insensitive, punctuation-tolerant) before
+        matching. Parenthetical sub-ingredients are resolved against the same database.
+      tags:
+        - Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzeRequest'
+            examples:
+              basic:
+                summary: Basic ingredient check
+                value:
+                  ingredients:
+                    - "Red 40"
+                    - "BHA"
+                    - "high fructose corn syrup"
+                    - "ascorbic acid"
+              with_allergen_profile:
+                summary: With personal allergen profile
+                value:
+                  ingredients:
+                    - "enriched flour (wheat)"
+                    - "nonfat milk"
+                    - "soy lecithin"
+                    - "Yellow 5"
+                    - "potassium sorbate"
+                  options:
+                    allergen_profile:
+                      - wheat
+                      - milk
+                    flag_threshold: concern
+                    include_alternatives: true
+                    include_sources: true
+                  metadata:
+                    product_name: "Snack Bar XYZ"
+                    barcode: "049000028911"
+      responses:
+        "200":
+          description: Successful analysis
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeResponse'
+              examples:
+                moderate_risk:
+                  summary: Moderate risk product
+                  value:
+                    request_id: "req_a1b2c3d4e5f6"
+                    analyzed_at: "2026-04-13T14:32:00Z"
+                    db_version: "2026.04.13"
+                    summary:
+                      total: 4
+                      matched: 4
+                      unmatched: 0
+                      risk_score: 50
+                      risk_level: moderate
+                      tier_counts:
+                        banned: 0
+                        allergen: 0
+                        concern: 2
+                        review: 1
+                        secret_gras: 0
+                        safe: 1
+                      flags:
+                        - probable_carcinogen_present
+                        - synthetic_dye_under_review
+                      allergen_alerts: []
+                    ingredients:
+                      - input: "Red 40"
+                        matched: true
+                        id: red40
+                        name: "Red No. 40 (Allura Red)"
+                        aka: "FD&C Red No. 40, E129"
+                        tier: review
+                        tier_label: "Under FDA Review"
+                        badge: "Under FDA review — 2025"
+                        category: color
+                        cfr: "21 CFR 74.340"
+                        health_effects: "Possible behavioral effects in children"
+                        warning_label: "Multiple state school bans pending. FDA 2025 reassessment ongoing."
+                        sources:
+                          - FDA
+                          - FSIS
+                        regulatory_actions:
+                          - body: FDA
+                            status: under_review
+                            year: 2025
+                    unmatched_ingredients: []
+                    metadata:
+                      product_name: "Snack Bar XYZ"
+                      barcode: "049000028911"
+                      echo: true
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "429":
+          $ref: '#/components/responses/RateLimited'
+        "500":
+          $ref: '#/components/responses/InternalError'
+
+  # ── POST /analyze/name ─────────────────────────────────────────────────────
+
+  /analyze/name:
+    post:
+      operationId: analyzeByName
+      summary: Analyze a product by its name (no barcode or ingredient list)
+      description: |
+        For clients that only have a food/product name to go on — e.g. a browser
+        extension reading a name off a nutrition-tracker page before the food's full
+        ingredient list is available. Resolves the name to an ingredient list via web
+        search, then runs the full `/analyze` pipeline on the result.
+
+        Unlike `/analyze/barcode`, there is no Open Food Facts/USDA step (those are
+        keyed on barcodes) — this is web-search-only, so it requires either
+        `options.anthropic_api_key` (bring-your-own-key) or a server-configured
+        `ANTHROPIC_API_KEY`.
+
+        Not yet implemented by all client SDKs; added alongside `/analyze/barcode`
+        to support the Chrome extension and mobile PWA's food-name lookup flow.
+      tags:
+        - Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NameLookupRequest'
+            examples:
+              simple:
+                summary: Simple name lookup
+                value:
+                  food_name: "Doritos Nacho Cheese"
+              with_byok:
+                summary: With a caller-supplied Anthropic key
+                value:
+                  food_name: "Diet Coke"
+                  options:
+                    anthropic_api_key: "sk-ant-xxxxxxxxxxxxxxxxxxxx"
+                    allergen_profile:
+                      - wheat
+      responses:
+        "200":
+          description: Name resolved and analyzed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeResponse'
+        "400":
+          description: Bad request, or no Anthropic key available (neither options.anthropic_api_key nor a server-configured key)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          description: No ingredient list could be found for this name via web search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: NAME_NOT_FOUND
+                  message: 'Could not find ingredients for "some obscure snack" via web search.'
+                  field: food_name
+                request_id: "req_1a2b3c4d5e6f"
+        "429":
+          $ref: '#/components/responses/RateLimited'
+        "500":
+          $ref: '#/components/responses/InternalError'
+
+  # ── POST /analyze/barcode ──────────────────────────────────────────────────
+
+  /analyze/barcode:
+    post:
+      operationId: analyzeBarcode
+      summary: Analyze a product by barcode
+      description: |
+        Looks up a product by UPC or EAN barcode, retrieves its ingredient list from
+        Open Food Facts (primary) or via web search (fallback), then runs the full
+        `/analyze` pipeline on the result.
+
+        Returns all fields from `AnalyzeResponse` plus a `product` object with name,
+        brand, image URL, serving size, and the raw ingredients label text.
+
+        ### Lookup cascade
+        1. **Open Food Facts** — free, covers 3M+ global products, no quota
+        2. **USDA FoodData Central** — branded foods database, requires `fdc_api_key` in options
+        3. **Web search fallback** — used automatically if both above return no result
+      tags:
+        - Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BarcodeRequest'
+            examples:
+              simple:
+                summary: Simple barcode lookup
+                value:
+                  barcode: "049000028911"
+              with_options:
+                summary: With allergen profile and FDC key
+                value:
+                  barcode: "038000845024"
+                  options:
+                    allergen_profile:
+                      - wheat
+                      - milk
+                    fdc_api_key: "YOUR_FDC_API_KEY"
+                    include_alternatives: true
+      responses:
+        "200":
+          description: Product found and analyzed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BarcodeResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          description: Barcode not found in any data source
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: BARCODE_NOT_FOUND
+                  message: "Barcode 012345678901 was not found in Open Food Facts, USDA FoodData Central, or web search."
+                  field: barcode
+                request_id: "req_9f4e2b1a"
+        "429":
+          $ref: '#/components/responses/RateLimited'
+        "500":
+          $ref: '#/components/responses/InternalError'
+
+  # ── GET /ingredients/search ────────────────────────────────────────────────
+
+  /ingredients/search:
+    get:
+      operationId: searchIngredients
+      summary: Search the ingredient database
+      description: |
+        Full-text search across ingredient names, aliases, and descriptions.
+        Supports filtering by tier and category.
+      tags:
+        - Ingredients
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query — matches ingredient names, aliases, and descriptions
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 100
+          example: "red dye"
+        - name: tier
+          in: query
+          required: false
+          description: Filter results to a specific tier
+          schema:
+            $ref: '#/components/schemas/Tier'
+          example: banned
+        - name: category
+          in: query
+          required: false
+          description: Filter by ingredient category
+          schema:
+            $ref: '#/components/schemas/IngredientCategory'
+          example: color
+        - name: limit
+          in: query
+          required: false
+          description: Maximum results to return (1–50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+          example: 10
+        - name: offset
+          in: query
+          required: false
+          description: Pagination offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - results
+                  - total
+                  - limit
+                  - offset
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IngredientRecord'
+                  total:
+                    type: integer
+                    description: Total matching results (before pagination)
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+                  query:
+                    type: string
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
+  # ── GET /ingredients/{id} ──────────────────────────────────────────────────
+
+  /ingredients/{id}:
+    get:
+      operationId: getIngredient
+      summary: Get a single ingredient record
+      description: Returns the full detail record for an ingredient by its database ID.
+      tags:
+        - Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ingredient database ID (e.g. `red40`, `bha`, `peanuts`)
+          schema:
+            type: string
+          example: bha
+      responses:
+        "200":
+          description: Ingredient record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientRecord'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          description: Ingredient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ── GET /tiers ─────────────────────────────────────────────────────────────
+
+  /tiers:
+    get:
+      operationId: listTiers
+      summary: List all classification tiers
+      description: |
+        Returns all six tier definitions with descriptions, risk weights, source citations,
+        and color codes for UI rendering.
+      tags:
+        - Reference
+      security: []
+      responses:
+        "200":
+          description: Tier definitions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tiers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TierDefinition'
+
+  # ── GET /db/version ────────────────────────────────────────────────────────
+
+  /db/version:
+    get:
+      operationId: getDatabaseVersion
+      summary: Get database version and stats
+      description: |
+        Returns the current ingredient database version, last updated timestamp,
+        and a count of ingredients per tier.
+      tags:
+        - Reference
+      security: []
+      responses:
+        "200":
+          description: Database version info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseVersion'
+              example:
+                version: "2026.04.13"
+                released_at: "2026-04-13T00:00:00Z"
+                total_ingredients: 107
+                tier_counts:
+                  banned: 8
+                  allergen: 9
+                  concern: 22
+                  review: 10
+                  secret_gras: 9
+                  safe: 49
+                sources:
+                  - name: FDA Food Additive Status List
+                    url: https://www.fda.gov/food/food-additives-petitions/food-additive-status-list
+                    last_synced: "2026-04-01T00:00:00Z"
+                  - name: FSIS Directive 7230.1
+                    url: https://www.fsis.usda.gov
+                    last_synced: "2026-01-17T00:00:00Z"
+                  - name: EWG Secret GRAS Report
+                    url: https://www.ewg.org/research/secret-gras
+                    last_synced: "2026-03-03T00:00:00Z"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COMPONENTS
+# ─────────────────────────────────────────────────────────────────────────────
+
+components:
+
+  # ── Security ────────────────────────────────────────────────────────────────
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        API key in Bearer format. Obtain keys from https://dashboard.ingredientiq.io.
+        Format: `iiq_live_xxxxxxxxxxxxxxxxxxxx` (production) or `iiq_test_xxxxxxxxxxxxxxxxxxxx` (sandbox)
+
+  # ── Headers ─────────────────────────────────────────────────────────────────
+
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests allowed per hour for your plan
+      schema:
+        type: integer
+      example: 1000
+    X-RateLimit-Remaining:
+      description: Requests remaining in the current window
+      schema:
+        type: integer
+      example: 983
+    X-RateLimit-Reset:
+      description: Unix timestamp when the current rate limit window resets
+      schema:
+        type: integer
+      example: 1744578600
+
+  # ── Reusable Responses ───────────────────────────────────────────────────────
+
+  responses:
+    BadRequest:
+      description: Bad request — malformed JSON, missing required field, or invalid value
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            missing_field:
+              value:
+                error:
+                  code: INVALID_REQUEST
+                  message: "Required field 'ingredients' is missing"
+                  field: ingredients
+                request_id: "req_abc123"
+            too_many:
+              value:
+                error:
+                  code: INGREDIENTS_TOO_MANY
+                  message: "Request contains 312 ingredients; maximum is 200"
+                  field: ingredients
+                request_id: "req_abc124"
+
+    Unauthorized:
+      description: Missing or invalid Bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: "Invalid or missing API key"
+            request_id: "req_abc125"
+
+    Forbidden:
+      description: Monthly quota exceeded for your plan
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: QUOTA_EXCEEDED
+              message: "Monthly request quota of 10,000 exceeded. Upgrade your plan at dashboard.ingredientiq.io"
+            request_id: "req_abc126"
+
+    RateLimited:
+      description: Too many requests — hourly rate limit hit
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: RATE_LIMITED
+              message: "Rate limit exceeded. Retry after 47 seconds."
+            request_id: "req_abc127"
+
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: INTERNAL_ERROR
+              message: "An unexpected error occurred. Please contact support with your request_id."
+            request_id: "req_abc128"
+
+  # ── Schemas ──────────────────────────────────────────────────────────────────
+
+  schemas:
+
+    # ── Enums ─────────────────────────────────────────────────────────────────
+
+    Tier:
+      type: string
+      enum:
+        - banned
+        - allergen
+        - concern
+        - review
+        - secret_gras
+        - safe
+      description: |
+        Safety classification tier.
+        - `banned` — FDA authorization revoked or explicitly prohibited (21 CFR Part 189)
+        - `allergen` — One of the Big 9 major food allergens per FSIS Directive 7230.1
+        - `concern` — Currently GRAS/approved but linked to harm by NTP, IARC, or state action
+        - `review` — On FDA's active 2025 post-market reassessment list
+        - `secret_gras` — Self-affirmed safe by manufacturer without FDA notification (EWG 2026)
+        - `safe` — FDA-reviewed GRAS or formally approved additive with strong safety record
+
+    IngredientCategory:
+      type: string
+      enum:
+        - allergen
+        - additive
+        - color
+        - contaminant
+        - emulsifier
+        - extract
+        - fat
+        - flavoring
+        - preservative
+        - protein
+        - supplement
+        - sweetener
+      description: Functional category of the ingredient
+
+    RiskLevel:
+      type: string
+      enum:
+        - safe
+        - low
+        - moderate
+        - high
+        - critical
+      description: |
+        Computed risk level based on risk_score:
+        - `safe` — 0–15
+        - `low` — 16–35
+        - `moderate` — 36–60
+        - `high` — 61–80
+        - `critical` — 81–100
+
+    AllergenProfileValue:
+      type: string
+      enum:
+        - peanuts
+        - tree_nuts
+        - milk
+        - eggs
+        - fish
+        - shellfish
+        - wheat
+        - soy
+        - sesame
+      description: Valid values for the allergen_profile option
+
+    FlagValue:
+      type: string
+      enum:
+        - contains_banned_substance
+        - contains_big9_allergen
+        - personal_allergen_detected
+        - probable_carcinogen_present
+        - endocrine_disruptor_present
+        - synthetic_dye_under_review
+        - secret_gras_ingredient
+        - high_fructose_corn_syrup
+        - aspartame_pku_warning
+        - nitrate_nitrite_present
+        - sulfite_present
+      description: Machine-readable warning flag
+
+    # ── Request objects ────────────────────────────────────────────────────────
+
+    AnalyzeOptions:
+      type: object
+      description: Optional configuration for the analysis
+      properties:
+        allergen_profile:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllergenProfileValue'
+          description: |
+            User's personal allergen list. When a match is found, the response includes
+            a `personal_allergen_detected` flag and populated `allergen_alerts` array.
+          example:
+            - peanuts
+            - wheat
+        flag_threshold:
+          $ref: '#/components/schemas/Tier'
+          description: |
+            Minimum tier severity to include in the `flags` array.
+            Default: `concern` (excludes `review`, `secret_gras`, and `safe`).
+          default: concern
+        include_alternatives:
+          type: boolean
+          description: |
+            When true, returns suggested safer alternative ingredients for items
+            classified as `concern` or above.
+          default: false
+        include_sources:
+          type: boolean
+          description: Include regulatory source citations in each ingredient result.
+          default: true
+        fdc_api_key:
+          type: string
+          description: |
+            Your USDA FoodData Central API key. Enables the USDA FDC step in the
+            barcode lookup cascade. Free keys available at https://fdc.nal.usda.gov/api-key-signup.
+          example: "YOUR_FDC_API_KEY"
+        anthropic_api_key:
+          type: string
+          description: |
+            Bring-your-own Anthropic API key. Enables the web-search fallback used by
+            `/analyze/barcode` (last resort) and `/analyze/name` (only option). If
+            omitted, the server falls back to its own configured `ANTHROPIC_API_KEY`,
+            if any.
+          example: "sk-ant-xxxxxxxxxxxxxxxxxxxx"
+
+    ProductMetadata:
+      type: object
+      description: Optional product context. Not used in analysis; echoed in the response.
+      properties:
+        product_name:
+          type: string
+          description: Human-readable product name
+          example: "Frosted Flakes"
+        barcode:
+          type: string
+          description: UPC or EAN barcode
+          pattern: '^\d{8,14}$'
+          example: "038000845024"
+
+    AnalyzeRequest:
+      type: object
+      required:
+        - ingredients
+      properties:
+        ingredients:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+          minItems: 1
+          maxItems: 200
+          description: |
+            Array of raw ingredient strings exactly as they appear on the food label.
+            Strings are normalized before matching: case-insensitive, punctuation-tolerant,
+            parenthetical sub-ingredients resolved.
+          example:
+            - "Red 40"
+            - "BHA"
+            - "high fructose corn syrup"
+            - "ascorbic acid"
+        options:
+          $ref: '#/components/schemas/AnalyzeOptions'
+        metadata:
+          $ref: '#/components/schemas/ProductMetadata'
+
+    BarcodeRequest:
+      type: object
+      required:
+        - barcode
+      properties:
+        barcode:
+          type: string
+          pattern: '^\d{8,14}$'
+          description: UPC (12-digit) or EAN (8 or 13-digit) barcode
+          example: "049000028911"
+        options:
+          $ref: '#/components/schemas/AnalyzeOptions'
+
+    NameLookupRequest:
+      type: object
+      required:
+        - food_name
+      properties:
+        food_name:
+          type: string
+          minLength: 2
+          maxLength: 200
+          description: Free-text food or product name, as read off a nutrition-tracker page
+          example: "Doritos Nacho Cheese"
+        options:
+          $ref: '#/components/schemas/AnalyzeOptions'
+
+    # ── Response objects ───────────────────────────────────────────────────────
+
+    TierCounts:
+      type: object
+      description: Count of matched ingredients per classification tier
+      required:
+        - banned
+        - allergen
+        - concern
+        - review
+        - secret_gras
+        - safe
+      properties:
+        banned:
+          type: integer
+          minimum: 0
+        allergen:
+          type: integer
+          minimum: 0
+        concern:
+          type: integer
+          minimum: 0
+        review:
+          type: integer
+          minimum: 0
+        secret_gras:
+          type: integer
+          minimum: 0
+        safe:
+          type: integer
+          minimum: 0
+
+    AllergenAlert:
+      type: object
+      required:
+        - allergen
+        - ingredient_name
+        - severity
+      properties:
+        allergen:
+          $ref: '#/components/schemas/AllergenProfileValue'
+          description: The allergen from the user's profile that was matched
+        ingredient_name:
+          type: string
+          description: The canonical ingredient name that triggered the alert
+          example: "Wheat / gluten"
+        severity:
+          type: string
+          enum:
+            - critical
+            - warning
+          description: "`critical` for direct matches, `warning` for potential cross-contact"
+
+    RegulatoryAction:
+      type: object
+      description: A known regulatory action taken against this ingredient
+      required:
+        - body
+        - status
+      properties:
+        body:
+          type: string
+          description: Regulatory body (e.g. FDA, EU, California, IARC, NTP)
+          example: FDA
+        status:
+          type: string
+          description: |
+            Action status. Common values: `banned`, `revoked`, `under_review`,
+            `mandatory_declaration`, `probable_carcinogen`, `group_2a_probable_carcinogen`,
+            `group_2b_carcinogen`, `warning_label_required`
+          example: under_review
+        year:
+          type: integer
+          description: Year of the action (if known)
+          example: 2025
+        note:
+          type: string
+          description: Additional context about the action
+          example: "Behavioral warning label required on packaged foods"
+
+    Alternative:
+      type: object
+      description: A suggested safer alternative ingredient
+      required:
+        - name
+        - reason
+      properties:
+        name:
+          type: string
+          description: Name of the suggested alternative
+          example: "Mixed tocopherols (Vitamin E)"
+        reason:
+          type: string
+          description: Why this is a safer choice
+          example: "Natural antioxidant; GRAS; no carcinogenicity concerns"
+        tier:
+          $ref: '#/components/schemas/Tier'
+          description: Safety tier of the suggested alternative
+          example: safe
+
+    AnalyzedIngredient:
+      type: object
+      required:
+        - input
+        - matched
+      properties:
+        input:
+          type: string
+          description: The raw ingredient string as submitted
+          example: "Red 40"
+        matched:
+          type: boolean
+          description: Whether a database record was found for this ingredient
+        id:
+          type: string
+          description: Ingredient database ID (present when matched = true)
+          example: red40
+        name:
+          type: string
+          description: Canonical ingredient name
+          example: "Red No. 40 (Allura Red)"
+        aka:
+          type: string
+          description: |
+            Common aliases, brand names, and E-numbers associated with this ingredient
+          example: "FD&C Red No. 40, Allura Red AC, E129"
+        tier:
+          $ref: '#/components/schemas/Tier'
+        tier_label:
+          type: string
+          description: Human-readable tier label
+          example: "Under FDA Review"
+        badge:
+          type: string
+          description: Short human-readable status badge for display in UI
+          example: "Under FDA review — 2025"
+        category:
+          $ref: '#/components/schemas/IngredientCategory'
+        cfr:
+          type: string
+          description: |
+            Regulatory reference — 21 CFR section, FSIS directive, or other citation
+          example: "21 CFR 74.340"
+        health_effects:
+          type: string
+          description: Documented or suspected health effects
+          example: "Possible behavioral effects in children; hyperactivity"
+        warning_label:
+          type: string
+          description: |
+            Consumer-facing warning text suitable for display in a nutrition app
+          example: "Multiple state school bans pending. FDA 2025 reassessment ongoing."
+        sources:
+          type: array
+          items:
+            type: string
+            enum:
+              - FDA
+              - FSIS
+              - EWG
+          description: Regulatory data sources backing this classification
+          example:
+            - FDA
+            - FSIS
+        regulatory_actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegulatoryAction'
+          description: Known regulatory actions taken against this ingredient
+        alternatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alternative'
+          description: |
+            Suggested safer alternatives. Present only when `include_alternatives: true`
+            and tier is `concern`, `review`, `secret_gras`, or `banned`.
+
+    AnalyzeSummary:
+      type: object
+      required:
+        - total
+        - matched
+        - unmatched
+        - risk_score
+        - risk_level
+        - tier_counts
+        - flags
+        - allergen_alerts
+      properties:
+        total:
+          type: integer
+          description: Total ingredients submitted in the request
+          example: 6
+        matched:
+          type: integer
+          description: Ingredients matched in the database
+          example: 5
+        unmatched:
+          type: integer
+          description: Ingredients not found in the database
+          example: 1
+        risk_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: |
+            Aggregate product risk score (0–100).
+
+            Formula:
+            ```
+            score = clamp(0, 100,
+              Σ(tier_weight[i]) / matched_count
+              + 20 if any banned ingredient
+              + 15 if personal allergen detected
+            )
+            ```
+          example: 50
+        risk_level:
+          $ref: '#/components/schemas/RiskLevel'
+        tier_counts:
+          $ref: '#/components/schemas/TierCounts'
+        flags:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlagValue'
+          description: Machine-readable warning flags triggered by this analysis
+        allergen_alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllergenAlert'
+          description: Populated when allergen_profile matches an ingredient
+
+    AnalyzeResponse:
+      type: object
+      required:
+        - request_id
+        - analyzed_at
+        - db_version
+        - summary
+        - ingredients
+        - unmatched_ingredients
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier for support and logging
+          example: "req_a1b2c3d4e5f6"
+        analyzed_at:
+          type: string
+          format: date-time
+          description: UTC timestamp of when the analysis was performed
+          example: "2026-04-13T14:32:00Z"
+        db_version:
+          type: string
+          description: |
+            Ingredient database version used for this request. Store this value
+            alongside cached results to detect when re-analysis is needed.
+          example: "2026.04.13"
+        summary:
+          $ref: '#/components/schemas/AnalyzeSummary'
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyzedIngredient'
+          description: Per-ingredient classification results for matched ingredients
+        unmatched_ingredients:
+          type: array
+          items:
+            type: string
+          description: |
+            Input strings that did not match any database entry. Submit these via
+            feedback to help expand the database.
+          example:
+            - "artificial flavor"
+            - "niacinamide"
+        metadata:
+          type: object
+          description: Echo of any metadata submitted with the request
+          properties:
+            product_name:
+              type: string
+            barcode:
+              type: string
+            echo:
+              type: boolean
+              example: true
+
+    ProductInfo:
+      type: object
+      description: Product information retrieved during barcode lookup
+      required:
+        - barcode
+        - product_name
+        - lookup_source
+      properties:
+        barcode:
+          type: string
+          example: "049000028911"
+        product_name:
+          type: string
+          example: "Coca-Cola Classic"
+        brand:
+          type: string
+          example: "Coca-Cola"
+        image_url:
+          type: ["string", "null"]
+          format: uri
+          description: URL of the product's front-of-pack image
+          example: "https://images.openfoodfacts.org/images/products/..."
+        serving_size:
+          type: string
+          example: "355 mL"
+        nutriscore_grade:
+          type: ["string", "null"]
+          enum:
+            - a
+            - b
+            - c
+            - d
+            - e
+            - null
+          description: Nutri-Score grade from Open Food Facts (if available)
+          example: "d"
+        ingredients_raw:
+          type: string
+          description: Raw ingredient list text as it appears on the label
+          example: "Carbonated Water, High Fructose Corn Syrup, Caramel Color, ..."
+        lookup_source:
+          type: string
+          enum:
+            - open_food_facts
+            - usda_fdc
+            - web_search
+          description: Which data source successfully returned product data
+
+    BarcodeResponse:
+      allOf:
+        - $ref: '#/components/schemas/AnalyzeResponse'
+        - type: object
+          required:
+            - product
+          properties:
+            product:
+              $ref: '#/components/schemas/ProductInfo'
+
+    IngredientRecord:
+      type: object
+      description: Full ingredient record from the database
+      required:
+        - id
+        - name
+        - tier
+        - category
+      properties:
+        id:
+          type: string
+          example: bha
+        name:
+          type: string
+          example: "BHA (Butylated hydroxyanisole)"
+        aka:
+          type: string
+          example: "Butylated hydroxyanisole, E320"
+        tier:
+          $ref: '#/components/schemas/Tier'
+        badge:
+          type: string
+          example: "Probable carcinogen — NTP 2021"
+        category:
+          $ref: '#/components/schemas/IngredientCategory'
+        cfr:
+          type: string
+          example: "21 CFR 182.3169 (GRAS)"
+        health_effects:
+          type: string
+          example: "Probable carcinogen; endocrine disruption"
+        warning_label:
+          type: string
+        sources:
+          type: array
+          items:
+            type: string
+        regulatory_actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegulatoryAction'
+        match_keys:
+          type: array
+          items:
+            type: string
+          description: All keyword variants used for fuzzy matching
+          example:
+            - bha
+            - butylated hydroxyanisole
+
+    TierDefinition:
+      type: object
+      required:
+        - value
+        - label
+        - risk_weight
+        - color_hex
+      properties:
+        value:
+          $ref: '#/components/schemas/Tier'
+        label:
+          type: string
+          example: "High Concern"
+        description:
+          type: string
+        risk_weight:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Weight used in risk score calculation
+          example: 60
+        color_hex:
+          type: string
+          description: Hex color for UI rendering
+          example: "#BA7517"
+        sources:
+          type: array
+          items:
+            type: string
+          example:
+            - FDA
+            - FSIS
+            - EWG
+
+    DatabaseVersion:
+      type: object
+      required:
+        - version
+        - released_at
+        - total_ingredients
+        - tier_counts
+      properties:
+        version:
+          type: string
+          description: Database version in YYYY.MM.DD format
+          example: "2026.04.13"
+        released_at:
+          type: string
+          format: date-time
+        total_ingredients:
+          type: integer
+          example: 107
+        tier_counts:
+          $ref: '#/components/schemas/TierCounts'
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              url:
+                type: string
+                format: uri
+              last_synced:
+                type: string
+                format: date-time
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - request_id
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              enum:
+                - INVALID_REQUEST
+                - INGREDIENTS_EMPTY
+                - INGREDIENTS_TOO_MANY
+                - INVALID_ALLERGEN
+                - INVALID_THRESHOLD
+                - UNAUTHORIZED
+                - QUOTA_EXCEEDED
+                - BARCODE_NOT_FOUND
+                - NAME_NOT_FOUND
+                - RATE_LIMITED
+                - INTERNAL_ERROR
+              description: Machine-readable error code
+              example: INGREDIENTS_TOO_MANY
+            message:
+              type: string
+              description: Human-readable error description
+              example: "Request contains 312 ingredients; maximum is 200"
+            field:
+              type: string
+              description: Request field that caused the error, if applicable
+              example: ingredients
+        request_id:
+          type: string
+          description: Unique request ID for support escalation
+          example: "req_9f4e2b1a"

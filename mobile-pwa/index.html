@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IngredientIQ">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>IngredientIQ</title>
+<style>
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --text: #1c1c1e;
+  --text2: #6c6c70;
+  --text3: #aeaeb2;
+  --border: rgba(60,60,67,0.12);
+  --blue: #007aff;
+  --green: #34c759;
+  --red: #ff3b30;
+  --orange: #ff9500;
+  --yellow: #ffcc00;
+  --purple: #af52de;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --text: #ffffff;
+    --text2: #aeaeb2;
+    --text3: #6c6c70;
+    --border: rgba(255,255,255,0.12);
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.4;
+  overscroll-behavior: none;
+}
+
+/* ── Layout shell ── */
+.app { height: 100%; display: flex; flex-direction: column; }
+.content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(60px + var(--safe-bot)); }
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: calc(49px + var(--safe-bot));
+  background: rgba(249,249,249,0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--border);
+  display: flex; align-items: flex-start; padding-top: 6px;
+  padding-bottom: var(--safe-bot);
+  z-index: 100;
+}
+@media (prefers-color-scheme: dark) {
+  .tab-bar { background: rgba(28,28,30,0.92); }
+}
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+.tab-icon { font-size: 22px; line-height: 1; }
+.tab-label { font-size: 10px; color: var(--text3); font-weight: 500; }
+.tab-item.active .tab-label { color: var(--blue); }
+.tab-item.active .tab-icon { filter: none; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── Nav bar ── */
+.nav-bar {
+  background: rgba(249,249,249,0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--border);
+  padding: calc(var(--safe-top) + 10px) 16px 12px;
+  position: sticky; top: 0; z-index: 50;
+}
+@media (prefers-color-scheme: dark) { .nav-bar { background: rgba(28,28,30,0.92); } }
+.nav-title { font-size: 17px; font-weight: 600; text-align: center; }
+.nav-large { font-size: 28px; font-weight: 700; padding: 8px 16px 0; }
+
+/* ── Search bar ── */
+.search-wrap { padding: 8px 16px 12px; }
+.search-bar {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(118,118,128,0.12);
+  border-radius: 10px; padding: 7px 12px;
+}
+.search-icon { font-size: 16px; color: var(--text3); flex-shrink: 0; }
+.search-bar input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 16px; color: var(--text); font-family: inherit;
+}
+.search-bar input::placeholder { color: var(--text3); }
+.scan-btn { background: none; border: none; font-size: 19px; padding: 0 2px; cursor: pointer; color: var(--blue); flex-shrink: 0; line-height: 1; }
+.scan-btn:active { opacity: 0.6; }
+
+/* ── Barcode scanner overlay ── */
+.scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 300; display: none; }
+.scanner-overlay.open { display: block; }
+.scanner-video { width: 100%; height: 100%; object-fit: cover; }
+.scanner-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 78%; max-width: 320px; height: 130px; border: 2px solid rgba(255,255,255,0.85); border-radius: 14px; box-shadow: 0 0 0 2000px rgba(0,0,0,0.45); pointer-events: none; }
+.scanner-top { position: absolute; top: 0; left: 0; right: 0; padding: calc(var(--safe-top) + 14px) 16px 14px; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+.scanner-title { color: #fff; font-size: 15px; font-weight: 600; }
+.scanner-cancel { color: #fff; font-size: 15px; font-weight: 500; background: rgba(255,255,255,0.15); border: none; border-radius: 20px; padding: 8px 16px; cursor: pointer; font-family: inherit; }
+.scanner-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 20px calc(var(--safe-bot) + 24px); text-align: center; z-index: 2; }
+.scanner-status { color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 14px; min-height: 18px; }
+.scanner-manual-btn { color: #fff; background: rgba(255,255,255,0.15); border: none; border-radius: 12px; padding: 12px 20px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+/* ── Manual barcode entry ── */
+.manual-entry-row { display: flex; gap: 8px; padding: 4px 16px 16px; }
+.manual-entry-row input { flex: 1; background: rgba(118,118,128,0.12); border: none; border-radius: 10px; padding: 12px 14px; font-size: 16px; color: var(--text); font-family: inherit; outline: none; }
+.manual-entry-row button { padding: 0 18px; border-radius: 10px; border: none; background: var(--blue); color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; font-family: inherit; }
+
+/* ── Cards ── */
+.section { padding: 0 16px 20px; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; padding: 0 4px; }
+.card { background: var(--card); border-radius: 12px; overflow: hidden; }
+.card-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border); cursor: pointer; gap: 12px; min-height: 44px; }
+.card-row:last-child { border-bottom: none; }
+.card-row:active { background: rgba(0,0,0,0.05); }
+.cr-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.cr-body { flex: 1; }
+.cr-name { font-size: 15px; font-weight: 500; }
+.cr-sub { font-size: 13px; color: var(--text2); margin-top: 1px; }
+.cr-arrow { color: var(--text3); font-size: 18px; flex-shrink: 0; }
+.cr-badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 8px; flex-shrink: 0; }
+
+/* ── Quick examples ── */
+.quick-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 16px 16px; }
+.chip { background: var(--card); border-radius: 20px; padding: 6px 13px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; color: var(--blue); font-family: inherit; }
+.chip:active { opacity: 0.7; }
+
+/* ── Add to home screen banner ── */
+.a2hs-banner {
+  margin: 0 16px 12px;
+  background: linear-gradient(135deg, #007aff 0%, #5ac8fa 100%);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.a2hs-icon { font-size: 24px; flex-shrink: 0; }
+.a2hs-text { flex: 1; }
+.a2hs-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.a2hs-sub { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.4; }
+.a2hs-close { color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer; flex-shrink: 0; padding: 0 2px; }
+
+/* ── Result sheet ── */
+.sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: none; }
+.sheet-overlay.open { display: block; }
+.sheet {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
+  background: var(--bg); border-radius: 20px 20px 0 0;
+  max-height: 90%; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+  padding-bottom: var(--safe-bot);
+}
+.sheet.open { transform: translateY(0); }
+.sheet-handle { width: 36px; height: 4px; background: var(--text3); border-radius: 2px; margin: 10px auto 0; opacity: 0.4; }
+.sheet-header { padding: 14px 16px 0; }
+.sheet-title { font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+.sheet-sub { font-size: 14px; color: var(--text2); }
+
+/* ── Risk indicator ── */
+.risk-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+.risk-gauge { flex: 1; }
+.risk-gauge-bar { height: 8px; background: rgba(120,120,128,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.risk-gauge-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.risk-label-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 3px; }
+.risk-big { text-align: center; }
+.risk-num { font-size: 32px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.risk-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* ── Ingredient rows ── */
+.ing-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 16px; background: var(--card); margin-bottom: 1px; }
+.ing-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.ing-info { flex: 1; }
+.ing-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.ing-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 8px; margin-bottom: 3px; }
+.ing-warn { font-size: 13px; color: var(--text2); line-height: 1.4; }
+
+/* ── Action buttons ── */
+.action-row { display: flex; gap: 8px; padding: 14px 16px; }
+.act-btn { flex: 1; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; min-height: 50px; }
+.act-btn:active { opacity: 0.8; transform: scale(0.98); }
+.btn-dismiss { background: rgba(120,120,128,0.15); color: var(--text); }
+.btn-log { background: var(--blue); color: #fff; }
+
+/* ── Analyzing spinner ── */
+.analyzing { padding: 32px 16px; text-align: center; }
+.spin { width: 36px; height: 36px; border: 3px solid rgba(120,120,128,0.2); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.analyzing p { font-size: 15px; color: var(--text2); }
+
+/* ── Empty / clean state ── */
+.clean-state { padding: 32px 16px; text-align: center; }
+.clean-icon { font-size: 48px; margin-bottom: 12px; }
+.clean-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.clean-sub { font-size: 15px; color: var(--text2); line-height: 1.5; }
+
+/* ── History ── */
+.empty-history { padding: 48px 16px; text-align: center; }
+.empty-history p { font-size: 15px; color: var(--text2); }
+
+/* ── Settings ── */
+.settings-section { padding: 0 16px 20px; }
+.settings-label { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; padding: 0 4px; }
+.settings-card { background: var(--card); border-radius: 12px; overflow: hidden; }
+.settings-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border); gap: 12px; min-height: 44px; }
+.settings-row:last-child { border-bottom: none; }
+.settings-row label { font-size: 15px; flex: 1; }
+.settings-row input[type="text"],
+.settings-row input[type="password"] {
+  flex: 1; background: none; border: none; outline: none; font-size: 15px;
+  color: var(--text); font-family: inherit; text-align: right; color: var(--text2);
+}
+.settings-toggle { width: 51px; height: 31px; background: rgba(120,120,128,0.25); border-radius: 16px; position: relative; flex-shrink: 0; cursor: pointer; transition: background 0.2s; }
+.settings-toggle.on { background: var(--green); }
+.settings-toggle-thumb { position: absolute; width: 27px; height: 27px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+.settings-toggle.on .settings-toggle-thumb { left: 22px; }
+.allergen-grid { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 16px; background: var(--card); border-radius: 12px; }
+.al-pill { padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; border: 1.5px solid var(--border); cursor: pointer; color: var(--text2); background: none; font-family: inherit; }
+.al-pill.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Tab content ── -->
+  <div class="content">
+
+    <!-- Search tab -->
+    <div class="screen active" id="screen-search">
+      <div class="nav-bar">
+        <div class="nav-title">IngredientIQ</div>
+      </div>
+      <div class="nav-large">Check ingredients</div>
+
+      <div class="search-wrap">
+        <div class="search-bar">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="main-search" placeholder="Food name (e.g. Doritos, Diet Coke)" autocomplete="off" autocorrect="off"/>
+          <button class="scan-btn" onclick="openScanner()" aria-label="Scan barcode">&#128247;</button>
+        </div>
+      </div>
+
+      <div id="a2hs-banner" class="a2hs-banner">
+        <div class="a2hs-icon">&#128242;</div>
+        <div class="a2hs-text">
+          <div class="a2hs-title">Add to home screen</div>
+          <div class="a2hs-sub">Tap Share &#8599; → "Add to Home Screen" to use alongside MacrosFirst</div>
+        </div>
+        <div class="a2hs-close" onclick="document.getElementById('a2hs-banner').style.display='none'">&#10005;</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Quick examples</div>
+        <div class="quick-chips">
+          <button class="chip" onclick="analyze('Doritos Nacho Cheese')">Doritos</button>
+          <button class="chip" onclick="analyze('Diet Coke')">Diet Coke</button>
+          <button class="chip" onclick="analyze('Oscar Mayer hot dogs')">Hot dogs</button>
+          <button class="chip" onclick="analyze('Frosted Flakes cereal')">Frosted Flakes</button>
+          <button class="chip" onclick="analyze('Pringles Original')">Pringles</button>
+          <button class="chip" onclick="analyze('M&Ms Milk Chocolate')">M&Ms</button>
+          <button class="chip" onclick="analyze('Cheerios Original')">Cheerios</button>
+          <button class="chip" onclick="analyze('Chobani Plain Greek Yogurt')">Greek yogurt</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">How to use with MacrosFirst</div>
+        <div class="card">
+          <div class="card-row" style="cursor:default">
+            <div class="cr-icon" style="background:#EAF3DE;font-size:18px">1</div>
+            <div class="cr-body"><div class="cr-name">Find food in MacrosFirst</div><div class="cr-sub">Search for what you're about to log</div></div>
+          </div>
+          <div class="card-row" style="cursor:default">
+            <div class="cr-icon" style="background:#E6F1FB;font-size:18px">2</div>
+            <div class="cr-body"><div class="cr-name">Switch to IngredientIQ</div><div class="cr-sub">Swipe up → tap IngredientIQ on home screen</div></div>
+          </div>
+          <div class="card-row" style="cursor:default">
+            <div class="cr-icon" style="background:#FAEEDA;font-size:18px">3</div>
+            <div class="cr-body"><div class="cr-name">Search the food name</div><div class="cr-sub">See safety warnings before logging</div></div>
+          </div>
+          <div class="card-row" style="cursor:default">
+            <div class="cr-icon" style="background:#EEEDFE;font-size:18px">4</div>
+            <div class="cr-body"><div class="cr-name">Switch back to MacrosFirst</div><div class="cr-sub">Log it or find a healthier alternative</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History tab -->
+    <div class="screen" id="screen-history">
+      <div class="nav-bar"><div class="nav-title">History</div></div>
+      <div class="nav-large">Recent checks</div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- Settings tab -->
+    <div class="screen" id="screen-settings">
+      <div class="nav-bar"><div class="nav-title">Settings</div></div>
+      <div class="nav-large" style="margin-bottom:16px">Settings</div>
+
+      <div class="settings-section">
+        <div class="settings-label">IngredientIQ server</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <label>Server URL</label>
+            <input type="text" id="api-base-url-field" placeholder="http://localhost:8787/v1" oninput="saveBaseUrl(this.value)"/>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);padding:6px 4px;line-height:1.5">
+          Base URL of your ingredientiq-api backend. Defaults to a local dev server — update once you've deployed one.
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">API key</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <label>Anthropic API key</label>
+            <input type="password" id="api-key-field" placeholder="sk-ant-..." oninput="saveKey(this.value)"/>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);padding:6px 4px;line-height:1.5">
+          Get a free key at console.anthropic.com. Sent to your IngredientIQ server above for lookup only — never called directly from this page. Without a key, the local database (31 ingredients, 127 known products) is used.
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Warning sensitivity</div>
+        <div class="settings-card">
+          <div class="settings-row" onclick="setSens('concern')">
+            <label>High concern & above</label>
+            <div class="settings-toggle" id="sens-concern"><div class="settings-toggle-thumb"></div></div>
+          </div>
+          <div class="settings-row" onclick="setSens('review')">
+            <label>Under review & above</label>
+            <div class="settings-toggle" id="sens-review"><div class="settings-toggle-thumb"></div></div>
+          </div>
+          <div class="settings-row" onclick="setSens('all')">
+            <label>All flagged ingredients</label>
+            <div class="settings-toggle" id="sens-all"><div class="settings-toggle-thumb"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">My allergens</div>
+        <div class="allergen-grid" id="allergen-grid"></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">About</div>
+        <div class="settings-card">
+          <div class="settings-row" style="cursor:default"><label>Version</label><span style="color:var(--text2);font-size:14px">1.0.0</span></div>
+          <div class="settings-row" style="cursor:default"><label>DB version</label><span style="color:var(--text2);font-size:14px">2026.04.13 · 31 ingredients, 127 products</span></div>
+          <div class="settings-row" style="cursor:default"><label>Sources</label><span style="color:var(--text2);font-size:14px">FDA · FSIS · EWG</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab bar ── -->
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-search" onclick="switchTab('search')">
+      <div class="tab-icon" style="filter:none">&#128269;</div>
+      <div class="tab-label" style="color:var(--blue)">Check</div>
+    </div>
+    <div class="tab-item" id="tab-history" onclick="switchTab('history')">
+      <div class="tab-icon">&#128337;</div>
+      <div class="tab-label">History</div>
+    </div>
+    <div class="tab-item" id="tab-settings" onclick="switchTab('settings')">
+      <div class="tab-icon">&#9881;&#65039;</div>
+      <div class="tab-label">Settings</div>
+    </div>
+  </div>
+
+  <!-- ── Analysis sheet ── -->
+  <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+  <div class="sheet" id="result-sheet">
+    <div class="sheet-handle"></div>
+    <div id="sheet-content"></div>
+  </div>
+
+  <!-- ── Barcode scanner overlay ── -->
+  <div class="scanner-overlay" id="scanner-overlay">
+    <video class="scanner-video" id="scanner-video" playsinline muted autoplay></video>
+    <div class="scanner-frame"></div>
+    <div class="scanner-top">
+      <div class="scanner-title">Scan barcode</div>
+      <button class="scanner-cancel" onclick="closeScanner()">Cancel</button>
+    </div>
+    <div class="scanner-bottom">
+      <div class="scanner-status" id="scanner-status">Point camera at a barcode</div>
+      <button class="scanner-manual-btn" onclick="closeScanner();openManualEntry()">Enter barcode manually</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOCAL_DB=[
+  {k:['red 3','erythrosine'],n:'Red No. 3',t:'banned',badge:'Banned Jan 2025',warn:'FDA revoked. Deadline Jan 2027.',dot:'#ff3b30'},
+  {k:['brominated vegetable oil','bvo'],n:'BVO',t:'banned',badge:'Banned Jul 2024',warn:'FDA revoked Jul 2024. Phaseout Aug 2025.',dot:'#ff3b30'},
+  {k:['partially hydrogenated','hydrogenated vegetable oil','hydrogenated soybean','hydrogenated cottonseed','hydrogenated palm'],n:'Trans fat / PHO',t:'banned',badge:'Banned 2018',warn:'Check ingredients for "partially hydrogenated."',dot:'#ff3b30'},
+  {k:['peanut','peanuts','groundnut'],n:'Peanuts',t:'allergen',badge:'Big 9 allergen',warn:'Anaphylaxis risk. No safe threshold.',dot:'#ff9500'},
+  {k:['shrimp','crab','lobster','prawn','crustacean'],n:'Crustacean shellfish',t:'allergen',badge:'Big 9 allergen',warn:'Anaphylaxis. Must declare specific type.',dot:'#ff9500'},
+  {k:['nonfat milk','skim milk','whole milk','casein','whey','caseinate','lactose','buttermilk','cheese'],n:'Milk / dairy',t:'allergen',badge:'Big 9 allergen',warn:'All milk derivatives must be declared.',dot:'#ff9500'},
+  {k:['egg white','egg yolk','whole egg','albumin','ovalbumin'],n:'Eggs',t:'allergen',badge:'Big 9 allergen',warn:'Present in coatings and glazes.',dot:'#ff9500'},
+  {k:['anchovy','salmon','tuna','tilapia','cod','fish sauce'],n:'Fish',t:'allergen',badge:'Big 9 allergen',warn:'Must list specific fish type.',dot:'#ff9500'},
+  {k:['almond','walnut','pecan','cashew','pistachio','hazelnut','macadamia','tree nut'],n:'Tree nuts',t:'allergen',badge:'Big 9 allergen',warn:'Each nut type must be listed.',dot:'#ff9500'},
+  {k:['enriched flour','whole wheat','wheat flour','semolina','gluten','durum'],n:'Wheat / gluten',t:'allergen',badge:'Big 9 allergen',warn:'Intestinal damage in celiac disease.',dot:'#ff9500'},
+  {k:['soy flour','soy protein','soy lecithin','textured vegetable protein','tvp','tofu','edamame'],n:'Soybeans',t:'allergen',badge:'Big 9 allergen',warn:'Soy lecithin in release agents must be declared.',dot:'#ff9500'},
+  {k:['sesame seed','tahini','sesame oil'],n:'Sesame',t:'allergen',badge:'Big 9 (added 2023)',warn:'Newest Big 9 addition.',dot:'#ff9500'},
+  {k:['bha','butylated hydroxyanisole'],n:'BHA',t:'concern',badge:'Probable carcinogen',warn:'NTP 2021: reasonably anticipated carcinogen.',dot:'#ff9500'},
+  {k:['bht','butylated hydroxytoluene'],n:'BHT',t:'concern',badge:'Endocrine disruptor',warn:'Hormone disruption in animal studies.',dot:'#ff9500'},
+  {k:['tbhq','tert-butylhydroquinone'],n:'TBHQ',t:'concern',badge:'Immune disruption',warn:'Immune system disruption. Banned in Japan.',dot:'#ff9500'},
+  {k:['potassium bromate','bromate'],n:'Potassium bromate',t:'concern',badge:'IARC Group 2B',warn:'Possible carcinogen. California banned 2025.',dot:'#ff9500'},
+  {k:['azodicarbonamide'],n:'Azodicarbonamide (ADA)',t:'concern',badge:'Decomposes to carcinogen',warn:'Banned in EU. Common in bread.',dot:'#ff9500'},
+  {k:['sodium nitrite','sodium nitrate','nitrite','celery juice powder','celery powder'],n:'Nitrates/nitrites',t:'concern',badge:'FSIS curing agents',warn:'Forms nitrosamines at high heat.',dot:'#ff9500'},
+  {k:['monosodium glutamate','msg','autolyzed yeast','yeast extract'],n:'MSG / glutamate',t:'concern',badge:'FSIS-flagged',warn:'Often hidden as "yeast extract" or "natural flavors."',dot:'#ff9500'},
+  {k:['sodium benzoate','potassium benzoate'],n:'Sodium benzoate',t:'concern',badge:'Benzene formation risk',warn:'Forms benzene with vitamin C in acidic drinks.',dot:'#ff9500'},
+  {k:['high fructose corn syrup','hfcs'],n:'High-fructose corn syrup',t:'concern',badge:'Metabolic risk',warn:'Linked to obesity, fatty liver, metabolic syndrome.',dot:'#ff9500'},
+  {k:['aspartame'],n:'Aspartame',t:'concern',badge:'IARC Group 2B (2023)',warn:'Possible carcinogen. Contains phenylalanine (PKU risk).',dot:'#ff9500'},
+  {k:['caramel color','caramel colour'],n:'Caramel coloring (4-MEI)',t:'concern',badge:'4-MEI probable carcinogen',warn:'4-methylimidazole contaminant. CA Prop 65.',dot:'#ff9500'},
+  {k:['red 40','allura red','red#40'],n:'Red No. 40',t:'review',badge:'Under FDA review 2025',warn:'Multiple state school bans. FDA reassessment.',dot:'#007aff'},
+  {k:['yellow 5','tartrazine'],n:'Yellow No. 5',t:'review',badge:'Under FDA review; FSIS-flagged',warn:'FSIS mandates declaration by full name.',dot:'#007aff'},
+  {k:['yellow 6','sunset yellow'],n:'Yellow No. 6',t:'review',badge:'Under FDA review 2025',warn:'FDA 2025 dye reassessment.',dot:'#007aff'},
+  {k:['blue 1','brilliant blue'],n:'Blue No. 1',t:'review',badge:'Under FDA review 2025',warn:'State school prohibition bills.',dot:'#007aff'},
+  {k:['blue 2','indigo carmine'],n:'Blue No. 2',t:'review',badge:'Under FDA review 2025',warn:'FDA 2025 dye reassessment.',dot:'#007aff'},
+  {k:['titanium dioxide'],n:'Titanium dioxide',t:'review',badge:'EU banned; FDA review',warn:'EU banned 2022. FDA active review.',dot:'#007aff'},
+  {k:['green tea extract','egcg'],n:'Green tea extract (EGCG)',t:'secret',badge:'Secret GRAS — FDA rejected',warn:'FDA twice rejected safety filing.',dot:'#af52de'},
+  {k:['aloe vera'],n:'Aloe vera',t:'secret',badge:'Secret GRAS 2010',warn:'Self-affirmed, no FDA review.',dot:'#af52de'},
+];
+
+// ── Product → known flagged ingredients map ─────────────────────────────────
+// Covers 90+ common products. Keys are lowercase search terms.
+// Values are ingredient strings that match LOCAL_DB keys.
+const PRODUCT_DB={
+  // Sodas & drinks
+  'diet coke':['aspartame','caramel color','potassium benzoate'],
+  'diet coca-cola':['aspartame','caramel color','potassium benzoate'],
+  'coca-cola':['high fructose corn syrup','caramel color'],
+  'coca cola':['high fructose corn syrup','caramel color'],
+  'coke':['high fructose corn syrup','caramel color'],
+  'pepsi':['high fructose corn syrup','caramel color'],
+  'diet pepsi':['aspartame','acesulfame potassium','caramel color','potassium benzoate'],
+  'pepsi zero':['aspartame','acesulfame potassium','caramel color'],
+  'coke zero':['aspartame','acesulfame potassium','caramel color','potassium benzoate'],
+  'sprite':['high fructose corn syrup'],
+  'sprite zero':['aspartame','acesulfame potassium'],
+  'fanta orange':['high fructose corn syrup','red 40','yellow 6'],
+  'fanta':['high fructose corn syrup','red 40','yellow 6'],
+  'mountain dew':['high fructose corn syrup','yellow 5','sodium benzoate'],
+  'diet mountain dew':['aspartame','acesulfame potassium','yellow 5','sodium benzoate'],
+  'dr pepper':['high fructose corn syrup','caramel color'],
+  'diet dr pepper':['aspartame','caramel color'],
+  'gatorade':['high fructose corn syrup','red 40','yellow 5','blue 1'],
+  'gatorade zero':['aspartame','acesulfame potassium','red 40','yellow 5'],
+  'powerade':['high fructose corn syrup','yellow 5','blue 1'],
+  'vitamin water':['high fructose corn syrup','red 40','yellow 5'],
+  'vitamin water zero':['aspartame','acesulfame potassium'],
+  'monster energy':['aspartame','acesulfame potassium','sodium benzoate'],
+  'red bull':['aspartame','acesulfame potassium'],
+  'kool aid':['aspartame','red 40','yellow 5'],
+  'sunny d':['high fructose corn syrup','yellow 5'],
+  'capri sun':['high fructose corn syrup'],
+  'snapple':['high fructose corn syrup'],
+  // Snacks — chips
+  'doritos':['red 40','yellow 6','yellow 5','monosodium glutamate'],
+  'doritos nacho':['red 40','yellow 6','yellow 5','monosodium glutamate'],
+  'doritos cool ranch':['red 40','yellow 5','yellow 6','monosodium glutamate'],
+  'cheetos':['monosodium glutamate','yellow 6','red 40'],
+  'cheetos crunchy':['monosodium glutamate','yellow 6','red 40'],
+  'cheetos puffs':['monosodium glutamate','yellow 6'],
+  'hot cheetos':['monosodium glutamate','red 40','yellow 6'],
+  'flamin hot cheetos':['monosodium glutamate','red 40','yellow 6'],
+  'pringles':['tbhq','monosodium glutamate'],
+  'pringles original':['tbhq','monosodium glutamate'],
+  'lays':['monosodium glutamate'],
+  'lays classic':['monosodium glutamate'],
+  'ruffles':['monosodium glutamate'],
+  'funyuns':['monosodium glutamate','yellow 6'],
+  'fritos':['monosodium glutamate'],
+  'bugles':['tbhq'],
+  'goldfish':['sodium phosphate'],
+  'ritz':['high fructose corn syrup','tbhq'],
+  'ritz crackers':['high fructose corn syrup','tbhq'],
+  'cheez it':['tbhq'],
+  'wheat thins':['high fructose corn syrup'],
+  // Candy
+  'mms':['red 40','yellow 6','yellow 5','blue 1','blue 2'],
+  'm&ms':['red 40','yellow 6','yellow 5','blue 1','blue 2'],
+  'm and ms':['red 40','yellow 6','yellow 5','blue 1','blue 2'],
+  'skittles':['red 40','yellow 6','yellow 5','blue 1','titanium dioxide'],
+  'starburst':['red 40','yellow 6','yellow 5'],
+  'sour patch kids':['red 40','yellow 6','yellow 5'],
+  'sour patch':['red 40','yellow 6','yellow 5'],
+  'swedish fish':['red 40'],
+  'gummy bears':['red 40','yellow 5'],
+  'jolly rancher':['red 40','yellow 5','blue 1'],
+  'twizzlers':['red 40'],
+  'nerds':['red 40','blue 1','yellow 5'],
+  'airheads':['red 40','yellow 5','blue 1'],
+  'mike and ike':['red 40','yellow 5'],
+  'reeses':['tbhq'],
+  'reeses pieces':['red 40','yellow 6','tbhq'],
+  'snickers':['high fructose corn syrup'],
+  'twix':['tbhq'],
+  'kit kat':['tbhq'],
+  'butterfinger':['tbhq'],
+  'hersheys':['tbhq'],
+  // Cookies / baked goods
+  'oreos':['high fructose corn syrup','tbhq'],
+  'chips ahoy':['high fructose corn syrup','tbhq'],
+  'pop tarts':['red 40','blue 1','yellow 6','tbhq','high fructose corn syrup'],
+  'pop-tarts':['red 40','blue 1','yellow 6','tbhq','high fructose corn syrup'],
+  'twinkies':['high fructose corn syrup','bht'],
+  'little debbie':['high fructose corn syrup','tbhq'],
+  'hostess':['high fructose corn syrup','bht'],
+  // Cereals
+  'frosted flakes':['bht'],
+  'frosted mini wheats':['bht'],
+  'froot loops':['red 40','yellow 6','yellow 5','blue 1','bht'],
+  'fruit loops':['red 40','yellow 6','yellow 5','blue 1','bht'],
+  'cap n crunch':['yellow 5','yellow 6','bht'],
+  "cap'n crunch":['yellow 5','yellow 6','bht'],
+  'lucky charms':['red 40','yellow 5','yellow 6','blue 1'],
+  'cocoa puffs':['bht'],
+  'reeses puffs':['tbhq','bht'],
+  'honey smacks':['high fructose corn syrup'],
+  'trix':['red 40','yellow 6','blue 1'],
+  // Processed meat
+  'hot dog':['sodium nitrite','corn syrup','sodium phosphate','monosodium glutamate'],
+  'hot dogs':['sodium nitrite','corn syrup','sodium phosphate','monosodium glutamate'],
+  'oscar mayer hot dogs':['sodium nitrite','corn syrup','sodium phosphate','monosodium glutamate'],
+  'oscar mayer':['sodium nitrite','corn syrup','monosodium glutamate'],
+  'ball park':['sodium nitrite','sodium phosphate','monosodium glutamate'],
+  'bologna':['sodium nitrite','corn syrup','monosodium glutamate'],
+  'salami':['sodium nitrite','sodium phosphate','bha','bht'],
+  'pepperoni':['sodium nitrite','sodium phosphate','bha','bht'],
+  'spam':['sodium nitrite','sodium phosphate'],
+  'slim jim':['sodium nitrite','monosodium glutamate','tbhq'],
+  'deli turkey':['sodium phosphate','monosodium glutamate','sodium nitrite'],
+  'deli ham':['sodium phosphate','sodium nitrite'],
+  'lunchables':['sodium nitrite','monosodium glutamate'],
+  'jimmy dean':['sodium nitrite','sodium phosphate','monosodium glutamate'],
+  'bacon':['sodium nitrite'],
+  // Frozen & packaged meals
+  'kraft mac':['yellow 5','yellow 6'],
+  'kraft macaroni':['yellow 5','yellow 6'],
+  'mac and cheese':['yellow 5','yellow 6'],
+  'macaroni and cheese':['yellow 5','yellow 6'],
+  'kraft dinner':['yellow 5','yellow 6'],
+  'cup noodles':['monosodium glutamate','tbhq'],
+  'top ramen':['monosodium glutamate','tbhq'],
+  'ramen noodles':['monosodium glutamate','tbhq'],
+  'hot pocket':['tbhq','yellow 5','sodium nitrite'],
+  'hot pockets':['tbhq','yellow 5','sodium nitrite'],
+  'velveeta':['sodium phosphate'],
+  'american cheese':['sodium phosphate'],
+  'chef boyardee':['sodium nitrite','caramel color'],
+  "campbell's soup":['monosodium glutamate','caramel color'],
+  'campbells soup':['monosodium glutamate','caramel color'],
+  'progresso soup':['monosodium glutamate'],
+  // Fast food
+  'mcdonalds':['tbhq','azodicarbonamide','sodium phosphate','caramel color'],
+  'mcdonald':['tbhq','azodicarbonamide','sodium phosphate'],
+  'wendys':['sodium phosphate','high fructose corn syrup'],
+  'burger king':['tbhq','sodium phosphate'],
+  'chick fil a':['monosodium glutamate'],
+  'kfc':['monosodium glutamate','sodium phosphate'],
+  'taco bell':['monosodium glutamate','tbhq'],
+  'subway':['azodicarbonamide','sodium phosphate'],
+};
+
+// Fuzzy match a food name to the product DB. Returns ingredient array or null.
+function findProductMatch(foodName){
+  const lq=foodName.toLowerCase().trim().replace(/[®™]/g,'');
+  let best=null, bestScore=0;
+  for(const[key,ings] of Object.entries(PRODUCT_DB)){
+    let score=0;
+    if(lq===key){ score=100; }
+    else if(lq.includes(key)){ score=70+(key.split(' ').length*5); }
+    else if(key.includes(lq)){ score=60; }
+    else {
+      // Word overlap scoring
+      const keyWords=key.split(/\s+/).filter(w=>w.length>2);
+      const matchCount=keyWords.filter(w=>lq.includes(w)).length;
+      if(matchCount>0) score=(matchCount/keyWords.length)*55;
+    }
+    if(score>bestScore){ bestScore=score; best=ings; }
+  }
+  return bestScore>=45 ? best : null;
+}
+
+const WEIGHTS={banned:100,allergen:80,concern:60,review:40,secret:35,safe:0};
+const DOTS={banned:'#ff3b30',allergen:'#ff9500',concern:'#ff9500',review:'#007aff',secret:'#af52de',safe:'#34c759'};
+const LABELS={banned:'Banned',allergen:'Big 9 Allergen',concern:'High Concern',review:'Under Review',secret:'Secret GRAS',safe:'GRAS'};
+const BG={banned:'#fff1f0',allergen:'#fff8e6',concern:'#fff8e6',review:'#e8f4fd',secret:'#f8f0ff',safe:'#f0fff4'};
+const TEXTC={banned:'#c0392b',allergen:'#7d4a00',concern:'#7d4a00',review:'#0056b3',secret:'#6d28d9',safe:'#1a7a3f'};
+
+let settings={apiKey:'',apiBaseUrl:'http://localhost:8787/v1',sensitivity:'concern',allergens:[]};
+let history=[];
+let currentAnalysis=null;
+
+// Load settings
+try{
+  const s=localStorage.getItem('iiq_settings');
+  if(s) settings=JSON.parse(s);
+  const h=localStorage.getItem('iiq_history');
+  if(h) history=JSON.parse(h);
+}catch(e){}
+
+function saveSettings(){localStorage.setItem('iiq_settings',JSON.stringify(settings));}
+
+function matchIng(raw){
+  const lq=raw.toLowerCase().trim();
+  return LOCAL_DB.find(d=>d.k.some(k=>lq.includes(k)||k.includes(lq)));
+}
+
+function runAnalysis(ings,foodName){
+  const hits=[]; const seen=new Set();
+  for(const raw of ings){
+    const m=matchIng(raw);
+    if(m&&!seen.has(m.n)){seen.add(m.n);hits.push({...m,input:raw});}
+  }
+  const SENS={concern:m=>['banned','allergen','concern'].includes(m.t),review:m=>['banned','allergen','concern','review'].includes(m.t),all:m=>true};
+  const filtered=hits.filter(SENS[settings.sensitivity]||SENS.concern);
+  const allergenHits=filtered.filter(m=>m.t==='allergen'&&settings.allergens.some(a=>m.k.some(k=>k.includes(a))));
+  const raw=filtered.length?Math.round(filtered.reduce((s,m)=>s+(WEIGHTS[m.t]||0),0)/filtered.length):0;
+  const score=Math.min(100,raw+(allergenHits.length?15:0)+(hits.some(m=>m.t==='banned')?20:0));
+  const worst=filtered.reduce((w,m)=>(!w||WEIGHTS[m.t]>WEIGHTS[w.t])?m:w,null);
+  return{filtered,allergenHits,score,worst,foodName,safe:filtered.length===0};
+}
+
+function riskLabel(s){
+  if(s>=81)return'Critical';if(s>=61)return'High';if(s>=36)return'Moderate';if(s>=16)return'Low';return'Minimal';
+}
+
+// Calls the IngredientIQ backend (see ingredientiq-api/) instead of Anthropic
+// directly — avoids the browser CORS/header problem the old direct call had,
+// and gets the fuller server-side ingredient database + CFR citations.
+async function lookupViaBackend(foodName){
+  const base=settings.apiBaseUrl||'http://localhost:8787/v1';
+  const r=await fetch(base+'/analyze/name',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+(settings.iiqApiToken||'iiq_test_mobile'),
+    },
+    body:JSON.stringify({
+      food_name:foodName,
+      options:{
+        anthropic_api_key:settings.apiKey,
+        allergen_profile:(settings.allergens||[]).map(a=>a==='tree nuts'?'tree_nuts':a),
+        flag_threshold:{concern:'concern',review:'review',all:'safe'}[settings.sensitivity]||'concern',
+        include_sources:true,
+      },
+    }),
+  });
+  if(!r.ok) throw new Error('Backend /analyze/name error '+r.status);
+  return r.json();
+}
+
+// Adapts the backend's AnalyzeResponse (per ingredientiq-openapi.yaml) into
+// the {filtered, allergenHits, score, worst, foodName, safe} shape
+// renderResult() already knows how to draw.
+function toLocalAnalysis(apiResponse, foodNameFallback){
+  const TIER_ALIAS={secret_gras:'secret'};
+  const SENS={concern:t=>['banned','allergen','concern'].includes(t),review:t=>['banned','allergen','concern','review'].includes(t),all:()=>true};
+  const sensFn=SENS[settings.sensitivity]||SENS.concern;
+
+  const filtered=(apiResponse.ingredients||[]).map(ing=>({
+    n:ing.name, t:TIER_ALIAS[ing.tier]||ing.tier, badge:ing.badge||'', warn:ing.warning_label||ing.health_effects||'', input:ing.input,
+  })).filter(m=>sensFn(m.t));
+
+  const allergenHits=(apiResponse.summary&&apiResponse.summary.allergen_alerts)||[];
+  const totalWeight=filtered.reduce((s,m)=>s+(WEIGHTS[m.t]||0),0);
+  const raw=filtered.length?Math.round(totalWeight/filtered.length):0;
+  const score=Math.min(100, raw+(allergenHits.length?15:0)+(filtered.some(m=>m.t==='banned')?20:0));
+  const worst=filtered.reduce((w,m)=>(!w||WEIGHTS[m.t]>WEIGHTS[w.t])?m:w,null);
+
+  return{
+    filtered, allergenHits, score, worst,
+    foodName:(apiResponse.metadata&&apiResponse.metadata.product_name)||foodNameFallback,
+    safe:filtered.length===0,
+  };
+}
+
+// ── Barcode scanning ─────────────────────────────────────────────────────
+let scannerStream=null, scannerDetector=null, scannerRAF=null, scannerActive=false;
+
+function barcodeSupported(){ return 'BarcodeDetector' in window; }
+
+async function openScanner(){
+  if(!barcodeSupported()){ openManualEntry(); return; }
+
+  const overlay=document.getElementById('scanner-overlay');
+  const status=document.getElementById('scanner-status');
+  const video=document.getElementById('scanner-video');
+  status.textContent='Point camera at a barcode';
+  overlay.classList.add('open');
+
+  try{
+    scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+  }catch(e){
+    status.textContent='Camera access denied — enable it in iPhone Settings, or enter the barcode manually';
+    return;
+  }
+
+  video.srcObject=scannerStream;
+  await video.play();
+
+  scannerDetector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});
+  scannerActive=true;
+  scanLoop();
+}
+
+async function scanLoop(){
+  if(!scannerActive) return;
+  const video=document.getElementById('scanner-video');
+  try{
+    if(video.readyState>=2){
+      const codes=await scannerDetector.detect(video);
+      if(codes&&codes.length){
+        const raw=codes[0].rawValue.replace(/\D/g,'');
+        if(raw.length>=8){ handleScannedBarcode(raw); return; }
+      }
+    }
+  }catch(e){ /* transient decode errors are normal mid-scan, keep going */ }
+  scannerRAF=requestAnimationFrame(scanLoop);
+}
+
+function closeScanner(){
+  scannerActive=false;
+  if(scannerRAF) cancelAnimationFrame(scannerRAF);
+  if(scannerStream){ scannerStream.getTracks().forEach(t=>t.stop()); scannerStream=null; }
+  document.getElementById('scanner-overlay').classList.remove('open');
+}
+
+function handleScannedBarcode(code){
+  closeScanner();
+  lookupBarcode(code);
+}
+
+function openManualEntry(){
+  document.getElementById('sheet-content').innerHTML=`
+    <div class="sheet-header">
+      <div class="sheet-title">Enter barcode</div>
+      <div class="sheet-sub">${barcodeSupported()?'':"Barcode scanning isn't supported in this browser — "}Type the UPC/EAN printed under the barcode</div>
+    </div>
+    <div class="manual-entry-row">
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" id="manual-barcode-input" placeholder="e.g. 028400090258"/>
+      <button onclick="submitManualBarcode()">Look up</button>
+    </div>`;
+  openSheet();
+  setTimeout(()=>{
+    const el=document.getElementById('manual-barcode-input');
+    if(el){
+      el.focus();
+      el.addEventListener('keydown',e=>{ if(e.key==='Enter') submitManualBarcode(); });
+    }
+  },50);
+}
+
+function submitManualBarcode(){
+  const el=document.getElementById('manual-barcode-input');
+  const code=(el&&el.value||'').replace(/\D/g,'');
+  if(code.length<8) return;
+  lookupBarcode(code);
+}
+
+// Calls the IngredientIQ backend's POST /analyze/barcode (Open Food Facts →
+// USDA FDC → Anthropic web search cascade) and adapts the response into the
+// same shape renderResult() already knows how to draw.
+async function lookupBarcode(barcode){
+  showAnalyzing('barcode '+barcode);
+  const base=settings.apiBaseUrl||'http://localhost:8787/v1';
+  try{
+    const r=await fetch(base+'/analyze/barcode',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+(settings.iiqApiToken||'iiq_test_mobile'),
+      },
+      body:JSON.stringify({
+        barcode,
+        options:{
+          anthropic_api_key:settings.apiKey,
+          allergen_profile:(settings.allergens||[]).map(a=>a==='tree nuts'?'tree_nuts':a),
+          flag_threshold:{concern:'concern',review:'review',all:'safe'}[settings.sensitivity]||'concern',
+          include_sources:true,
+        },
+      }),
+    });
+    if(!r.ok){
+      const body=await r.json().catch(()=>null);
+      throw new Error((body&&body.error&&body.error.message)||('Barcode lookup failed ('+r.status+')'));
+    }
+    const apiResult=await r.json();
+    const foodName=(apiResult.product&&apiResult.product.product_name)||('Barcode '+barcode);
+    const analysis=toLocalAnalysis(apiResult,foodName);
+    analysis.source='barcode';
+    analysis.product=apiResult.product;
+    currentAnalysis=analysis;
+    saveHistory(analysis.foodName,analysis);
+    renderResult(analysis);
+  }catch(e){
+    renderBarcodeError(barcode,e.message);
+  }
+}
+
+function renderBarcodeError(barcode,message){
+  document.getElementById('sheet-content').innerHTML=`
+    <div class="sheet-header">
+      <div class="sheet-title">Barcode ${escHtml(barcode)}</div>
+    </div>
+    <div class="clean-state">
+      <div class="clean-icon" style="font-size:36px">&#9888;&#65039;</div>
+      <div class="clean-title" style="color:#636366;font-size:17px">Couldn't look this up</div>
+      <div class="clean-sub">${escHtml(message)}</div>
+    </div>
+    <div class="action-row">
+      <button class="act-btn btn-dismiss" onclick="closeSheet()">Close</button>
+      <button class="act-btn btn-log" onclick="openManualEntry()">Try another barcode</button>
+    </div>
+    <div style="height:8px"></div>`;
+  openSheet();
+}
+
+async function analyze(foodName){
+  if(!foodName) foodName=document.getElementById('main-search').value.trim();
+  if(!foodName) return;
+  document.getElementById('main-search').value=foodName;
+  showAnalyzing(foodName);
+
+  // Step 1: Local product DB — instant, no network needed, covers 127+ products
+  const productMatch=findProductMatch(foodName);
+  if(productMatch&&productMatch.length){
+    const analysis=runAnalysis(productMatch,foodName);
+    analysis.source='product_db';
+    analysis.rawIng=productMatch;
+    currentAnalysis=analysis;
+    saveHistory(foodName,analysis);
+    renderResult(analysis);
+    return;
+  }
+
+  // Step 2: IngredientIQ backend — web-search-backed lookup for foods not in
+  // the local product DB. Requires an Anthropic key (BYOK), sent to your own
+  // backend below, never called directly from this page.
+  if(settings.apiKey){
+    try{
+      const apiResult=await lookupViaBackend(foodName);
+      if(apiResult){
+        const analysis=toLocalAnalysis(apiResult,foodName);
+        analysis.source='api';
+        currentAnalysis=analysis;
+        saveHistory(foodName,analysis);
+        renderResult(analysis);
+        return;
+      }
+    }catch(e){ console.warn('[IIQ] Backend lookup failed:',e); }
+  }
+
+  // Step 3: Fallback — product not in local DB, no API key, or backend
+  // unreachable. Still run analysis on the raw food name tokens in case the
+  // user typed an ingredient directly (e.g. "aspartame", "BHA", "Red 40").
+  const ings=[foodName,...foodName.split(/[\s,]+/)];
+  const analysis=runAnalysis(ings,foodName);
+  analysis.source='fallback';
+  analysis.rawIng=ings;
+  currentAnalysis=analysis;
+  saveHistory(foodName,analysis);
+  renderResult(analysis);
+}
+
+function showAnalyzing(name){
+  document.getElementById('sheet-content').innerHTML=`
+    <div class="analyzing">
+      <div class="spin"></div>
+      <p>Checking "${name}"…</p>
+    </div>`;
+  openSheet();
+}
+
+function renderResult(analysis){
+  const{filtered,score,worst,foodName,safe,source}=analysis;
+  const wt=worst?worst.t:'safe';
+  const wc=DOTS[wt];
+  const rl=riskLabel(score);
+
+  // Source badge
+  const sourceBadge={
+    product_db:`<span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;background:#eaf3de;color:#27500a">Local product DB</span>`,
+    api:`<span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;background:#e6f1fb;color:#0c447c">Web search</span>`,
+    barcode:`<span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;background:#e6f1fb;color:#0c447c">Scanned barcode</span>`,
+    fallback:`<span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;background:#f2f2f7;color:#636366">Limited — add API key for full lookup</span>`,
+    not_found:`<span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;background:#fff8e6;color:#7d4a00">Not in local DB — add API key</span>`,
+  }[source]||'';
+
+  const brand=analysis.product&&analysis.product.brand;
+
+  let html=`
+    <div class="sheet-header">
+      <div class="sheet-title" style="margin-bottom:5px">${escHtml(foodName)}</div>
+      ${brand?`<div class="sheet-sub" style="margin-bottom:5px">${escHtml(brand)}</div>`:''}
+      <div>${sourceBadge}</div>
+      <div style="margin-top:4px;font-size:14px;color:${safe&&source!=='fallback'?'#34c759':safe?'#636366':wc}">${
+        source==='fallback'&&safe
+          ? 'Add an Anthropic API key in Settings for full ingredient lookup'
+          : safe
+          ? 'No flagged ingredients found'
+          : 'Ingredient safety alert'
+      }</div>
+    </div>`;
+
+  // Not-in-DB state when only fallback and clean (no match at all)
+  if(source==='fallback'&&safe){
+    html+=`
+      <div class="clean-state">
+        <div class="clean-icon" style="font-size:36px">&#128270;</div>
+        <div class="clean-title" style="color:#636366;font-size:17px">"${escHtml(foodName)}" not in local DB</div>
+        <div class="clean-sub">Add your Anthropic API key in Settings to look up any food via web search — including this one.</div>
+      </div>
+      <div class="action-row">
+        <button class="act-btn btn-dismiss" onclick="closeSheet()">Close</button>
+        <button class="act-btn btn-log" style="background:#636366" onclick="switchTab('settings');closeSheet()">Open Settings</button>
+      </div>
+      <div style="height:8px"></div>`;
+    document.getElementById('sheet-content').innerHTML=html;
+    return;
+  }
+
+  if(!safe){
+    html+=`
+    <div class="risk-row">
+      <div class="risk-big">
+        <div class="risk-num" style="color:${wc}">${score}</div>
+        <div class="risk-lbl">/ 100</div>
+      </div>
+      <div class="risk-gauge">
+        <div class="risk-label-row"><span>Risk score</span><span style="color:${wc}">${rl}</span></div>
+        <div class="risk-gauge-bar">
+          <div class="risk-gauge-fill" style="width:${score}%;background:${wc}"></div>
+        </div>
+      </div>
+    </div>`;
+
+    html+=`<div style="padding:0 16px 8px;font-size:13px;font-weight:600;color:#6c6c70;text-transform:uppercase;letter-spacing:0.03em">${filtered.length} flagged ingredient${filtered.length!==1?'s':''}</div>`;
+
+    const sorted=[...filtered].sort((a,b)=>(WEIGHTS[b.t]||0)-(WEIGHTS[a.t]||0));
+    html+=sorted.map(m=>`
+      <div class="ing-row" style="background:${BG[m.t]||'var(--card)'}">
+        <div class="ing-dot" style="background:${DOTS[m.t]}"></div>
+        <div class="ing-info">
+          <div class="ing-name" style="color:${TEXTC[m.t]}">${escHtml(m.n)}</div>
+          <div class="ing-badge" style="background:${DOTS[m.t]}22;color:${TEXTC[m.t]}">${escHtml(m.badge)}</div>
+          <div class="ing-warn">${escHtml(m.warn)}</div>
+        </div>
+      </div>`).join('');
+  } else {
+    html+=`
+      <div class="clean-state">
+        <div class="clean-icon">&#10003;</div>
+        <div class="clean-title" style="color:#34c759">Looks clean</div>
+        <div class="clean-sub">No flagged ingredients found for "${escHtml(foodName)}" in our ${source==='api'||source==='barcode'?'full lookup':'local product database'}.</div>
+      </div>`;
+  }
+
+  html+=`
+    <div class="action-row">
+      <button class="act-btn btn-dismiss" onclick="closeSheet()">Dismiss</button>
+      ${!safe?`<button class="act-btn btn-log" onclick="closeSheet()">Log anyway</button>`:''}
+    </div>
+    <div style="height:8px"></div>`;
+
+  document.getElementById('sheet-content').innerHTML=html;
+}
+
+function saveHistory(name,analysis){
+  history.unshift({name,score:analysis.score,flags:analysis.filtered.length,time:Date.now(),safe:analysis.safe,wt:analysis.worst?analysis.worst.t:'safe'});
+  if(history.length>50)history=history.slice(0,50);
+  try{localStorage.setItem('iiq_history',JSON.stringify(history));}catch(e){}
+  renderHistory();
+}
+
+function renderHistory(){
+  const el=document.getElementById('history-list');
+  if(!history.length){
+    el.innerHTML='<div class="empty-history"><p>Foods you check will appear here</p></div>';
+    return;
+  }
+  const rows=history.slice(0,30).map(h=>{
+    const d=new Date(h.time);
+    const timeStr=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const dateStr=d.toLocaleDateString([],{month:'short',day:'numeric'});
+    const wc=h.safe?'#34c759':DOTS[h.wt]||'#ff9500';
+    return`<div class="card-row" onclick="recheck('${escHtml(h.name)}')">
+      <div class="cr-icon" style="background:${wc}22;color:${wc};font-size:14px;font-weight:700">${h.safe?'✓':h.score}</div>
+      <div class="cr-body">
+        <div class="cr-name">${escHtml(h.name)}</div>
+        <div class="cr-sub">${h.safe?'Clean':h.flags+' flag'+(h.flags!==1?'s':'')} · ${dateStr} ${timeStr}</div>
+      </div>
+      <div class="cr-arrow">&#8250;</div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div style="padding:0 16px 8px"><div class="card">${rows}</div></div>`;
+}
+
+function recheck(name){analyze(name);}
+
+function openSheet(){
+  document.getElementById('sheet-overlay').classList.add('open');
+  requestAnimationFrame(()=>document.getElementById('result-sheet').classList.add('open'));
+}
+function closeSheet(){
+  document.getElementById('result-sheet').classList.remove('open');
+  setTimeout(()=>document.getElementById('sheet-overlay').classList.remove('open'),300);
+}
+
+function switchTab(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('tab-'+name).querySelector('.tab-label').style.color='var(--blue)';
+  document.querySelectorAll('.tab-item:not(.active) .tab-label').forEach(l=>l.style.color='');
+  if(name==='history')renderHistory();
+  if(name==='settings')renderSettings();
+}
+
+function renderSettings(){
+  const u=document.getElementById('api-base-url-field');
+  if(u)u.value=settings.apiBaseUrl||'http://localhost:8787/v1';
+  const k=document.getElementById('api-key-field');
+  if(k)k.value=settings.apiKey||'';
+  ['concern','review','all'].forEach(s=>{
+    const el=document.getElementById('sens-'+s);
+    if(el)el.classList.toggle('on',settings.sensitivity===s);
+  });
+  const grid=document.getElementById('allergen-grid');
+  const allergens=['peanuts','milk','eggs','wheat','soy','shellfish','fish','tree nuts','sesame'];
+  grid.innerHTML=allergens.map(a=>`<button class="al-pill${settings.allergens.includes(a)?' on':''}" onclick="toggleAllergen('${a}')">${a}</button>`).join('');
+}
+
+function setSens(s){
+  settings.sensitivity=s;
+  saveSettings();
+  renderSettings();
+}
+
+function toggleAllergen(a){
+  if(settings.allergens.includes(a))settings.allergens=settings.allergens.filter(x=>x!==a);
+  else settings.allergens.push(a);
+  saveSettings();
+  renderSettings();
+}
+
+function saveKey(v){settings.apiKey=v.trim();saveSettings();}
+function saveBaseUrl(v){settings.apiBaseUrl=v.trim()||'http://localhost:8787/v1';saveSettings();}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Hide A2HS banner if already installed as PWA
+if(window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches){
+  document.getElementById('a2hs-banner').style.display='none';
+}
+
+// Search on enter
+document.getElementById('main-search').addEventListener('keydown',e=>{
+  if(e.key==='Enter')analyze(e.target.value.trim());
+});
+
+// Init
+renderHistory();
+renderSettings();
+</script>
+</body>
+</html>

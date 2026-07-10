@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IngredientIQ — Setup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 0 24px;
+      color: #1c1c1e;
+      line-height: 1.6;
+    }
+    h1 { font-size: 28px; margin-bottom: 6px; }
+    .sub { font-size: 15px; color: #636366; margin-bottom: 32px; }
+    .step { display: flex; gap: 14px; margin-bottom: 22px; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #1c1c1e; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; flex-shrink: 0; margin-top: 1px;
+    }
+    .step h3 { font-size: 15px; margin-bottom: 3px; }
+    .step p { font-size: 13px; color: #636366; }
+    .apps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+    .app-chip {
+      font-size: 11px; padding: 3px 10px;
+      border-radius: 10px; background: #f2f2f7;
+      border: 0.5px solid #d1d1d6; color: #1c1c1e;
+    }
+    .note { background: #f2f2f7; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #636366; margin-top: 28px; }
+    .note strong { color: #1c1c1e; }
+    a { color: #007aff; text-decoration: none; }
+    .tiers { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+    .tier { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+    .tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <h1>IngredientIQ installed</h1>
+  <p class="sub">You'll now see ingredient safety warnings when logging food in supported apps.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div>
+      <h3>Open a supported nutrition app</h3>
+      <p>IngredientIQ activates automatically on:</p>
+      <div class="apps">
+        <span class="app-chip">MyFitnessPal</span>
+        <span class="app-chip">MacrosFirst</span>
+        <span class="app-chip">Cronometer</span>
+        <span class="app-chip">Lose It!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div>
+      <h3>Log a food as normal</h3>
+      <p>When you tap "Add to Diary" or "Log Food," IngredientIQ checks the ingredients before proceeding.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div>
+      <h3>See the safety warning</h3>
+      <p>If flagged ingredients are found, a warning appears. You can log anyway, find an alternative, or dismiss.</p>
+      <div class="tiers" style="margin-top:8px">
+        <div class="tier"><div class="tier-dot" style="background:#E24B4A"></div><span>Banned — FDA authorization revoked</span></div>
+        <div class="tier"><div class="tier-dot" style="background:#EF9F27"></div><span>Big 9 allergen — FSIS mandatory declaration</span></div>
+        <div class="tier"><div class="tier-dot" style="background:#BA7517"></div><span>High concern — probable carcinogens, endocrine disruptors</span></div>
+        <div class="tier"><div class="tier-dot" style="background:#378ADD"></div><span>Under FDA review — 2025 post-market reassessment</span></div>
+        <div class="tier"><div class="tier-dot" style="background:#7F77DD"></div><span>Secret GRAS — self-affirmed safe without FDA review</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div>
+      <h3>Optional: Add your Anthropic API key</h3>
+      <p>Click the IngredientIQ icon in your browser toolbar → paste your <a href="https://console.anthropic.com" target="_blank">Anthropic API key</a>. This enables lookup for foods not in the local database (40 ingredients included without a key).</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Data sources:</strong> Classifications are based on FDA 21 CFR, FSIS Directive 7230.1 (Jan 2024), and EWG Secret GRAS report (March 2026). This extension is not a substitute for medical advice. Always consult a healthcare provider for dietary decisions.
+  </div>
+
+</body>
+</html>

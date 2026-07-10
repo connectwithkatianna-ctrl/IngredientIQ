@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IngredientIQ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      color: #1c1c1e;
+      background: #fff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #1c1c1e; color: #f5f5f7; }
+      .section { border-color: #3a3a3c; }
+      .section-title { color: #8e8e93; }
+      input, select { background: #2c2c2e; border-color: #3a3a3c; color: #f5f5f7; }
+      .toggle-bg { background: #3a3a3c; }
+      .api-status { background: #2c2c2e; }
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 10px;
+      border-bottom: 0.5px solid #e5e5ea;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: #1c1c1e;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-text {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: #8e8e93;
+    }
+
+    .master-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .toggle-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #636366;
+    }
+
+    /* iOS-style toggle */
+    .toggle-bg {
+      width: 40px;
+      height: 24px;
+      background: #e5e5ea;
+      border-radius: 12px;
+      position: relative;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .toggle-bg.on { background: #34c759; }
+
+    .toggle-thumb {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+
+    .toggle-bg.on .toggle-thumb { left: 18px; }
+
+    .site-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 11px;
+      border-bottom: 0.5px solid #e5e5ea;
+    }
+
+    .site-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .site-dot.active { background: #34c759; }
+    .site-dot.inactive { background: #ff3b30; }
+    .site-dot.unsupported { background: #8e8e93; }
+
+    .section {
+      padding: 10px 16px;
+      border-bottom: 0.5px solid #e5e5ea;
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #8e8e93;
+      margin-bottom: 8px;
+    }
+
+    .field {
+      margin-bottom: 8px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      color: #636366;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 7px 10px;
+      border: 0.5px solid #d1d1d6;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: inherit;
+      outline: none;
+      color: #1c1c1e;
+      background: #fff;
+    }
+
+    input:focus, select:focus {
+      border-color: #007aff;
+      box-shadow: 0 0 0 2px rgba(0,122,255,0.15);
+    }
+
+    .key-hint {
+      font-size: 10px;
+      color: #8e8e93;
+      margin-top: 3px;
+    }
+
+    .key-hint a { color: #007aff; text-decoration: none; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 0.5px solid #d1d1d6;
+      background: #f2f2f7;
+      color: #636366;
+      transition: all 0.12s;
+    }
+
+    .pill.on {
+      background: #1c1c1e;
+      color: #fff;
+      border-color: #1c1c1e;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .pill { background: #2c2c2e; color: #aeaeb2; border-color: #3a3a3c; }
+      .pill.on { background: #f5f5f7; color: #1c1c1e; }
+    }
+
+    .api-status {
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #f2f2f7;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .api-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 0.5px solid #e5e5ea;
+    }
+
+    .stat {
+      flex: 1;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 18px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      color: #8e8e93;
+    }
+
+    .footer {
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #8e8e93;
+    }
+
+    .footer a { color: #007aff; text-decoration: none; }
+
+    .save-btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 0 16px 12px;
+      padding: 9px;
+      background: #1c1c1e;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .save-btn:hover { opacity: 0.85; }
+    .save-btn:active { transform: scale(0.98); }
+
+    @media (prefers-color-scheme: dark) {
+      .save-btn { background: #f5f5f7; color: #1c1c1e; }
+    }
+
+    #saved-msg {
+      text-align: center;
+      font-size: 11px;
+      color: #34c759;
+      height: 16px;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5L1.5 14h13L8 1.5z" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8 6v3.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="8" cy="11.5" r="0.7" fill="#fff"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">IngredientIQ</div>
+        <div class="logo-sub">Food safety warnings</div>
+      </div>
+    </div>
+    <div class="master-toggle" onclick="toggleEnabled()">
+      <span class="toggle-label" id="enable-label">On</span>
+      <div class="toggle-bg on" id="enable-toggle">
+        <div class="toggle-thumb"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-status" id="site-status">
+    <div class="site-dot" id="site-dot"></div>
+    <span id="site-text">Checking current site…</span>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num" id="stat-warnings">–</div>
+      <div class="stat-lbl">warnings shown</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">40</div>
+      <div class="stat-lbl">ingredients in DB</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-lbl">apps supported</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Warning style</div>
+    <div class="pill-row">
+      <div class="pill" data-group="style" data-value="modal" onclick="setPill(this,'style')">Center modal</div>
+      <div class="pill" data-group="style" data-value="banner" onclick="setPill(this,'style')">Top banner</div>
+      <div class="pill" data-group="style" data-value="both" onclick="setPill(this,'style')">Both</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Warn for</div>
+    <div class="pill-row">
+      <div class="pill" data-group="sensitivity" data-value="concern" onclick="setPill(this,'sensitivity')">Concern+</div>
+      <div class="pill" data-group="sensitivity" data-value="review" onclick="setPill(this,'sensitivity')">Review+</div>
+      <div class="pill" data-group="sensitivity" data-value="all" onclick="setPill(this,'sensitivity')">All flags</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">My allergens</div>
+    <div class="pill-row" id="allergen-pills">
+      <div class="pill" data-allergen="peanuts" onclick="toggleAllergen(this)">Peanuts</div>
+      <div class="pill" data-allergen="milk" onclick="toggleAllergen(this)">Milk</div>
+      <div class="pill" data-allergen="eggs" onclick="toggleAllergen(this)">Eggs</div>
+      <div class="pill" data-allergen="wheat" onclick="toggleAllergen(this)">Wheat</div>
+      <div class="pill" data-allergen="soy" onclick="toggleAllergen(this)">Soy</div>
+      <div class="pill" data-allergen="shellfish" onclick="toggleAllergen(this)">Shellfish</div>
+      <div class="pill" data-allergen="fish" onclick="toggleAllergen(this)">Fish</div>
+      <div class="pill" data-allergen="tree nuts" onclick="toggleAllergen(this)">Tree nuts</div>
+      <div class="pill" data-allergen="sesame" onclick="toggleAllergen(this)">Sesame</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">IngredientIQ server</div>
+    <div class="field">
+      <input type="text" id="api-base-url-input" placeholder="http://localhost:8787/v1" autocomplete="off"/>
+      <div class="key-hint">Base URL of your ingredientiq-api backend. Defaults to a local dev server — update this once you've deployed one.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Anthropic API key <span style="color:#8e8e93;font-weight:400;font-size:9px;text-transform:none">(optional — enables lookup for foods not on the page)</span></div>
+    <div class="field">
+      <input type="password" id="api-key-input" placeholder="sk-ant-xxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
+      <div class="key-hint">Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Sent to your IngredientIQ server above for lookup only — never called directly from the browser. Without a key, the local ingredient database (40 ingredients) is used.</div>
+    </div>
+    <div class="api-status" id="api-status">
+      <div class="api-status-dot" style="background:#8e8e93"></div>
+      <span id="api-status-text">No API key — local DB only</span>
+    </div>
+  </div>
+
+  <div id="saved-msg"></div>
+  <button class="save-btn" onclick="saveSettings()">Save settings</button>
+
+  <div class="footer">
+    <span>v1.0.0 · DB 2026.04.13</span>
+    <a href="https://docs.ingredientiq.io" target="_blank">Docs</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
