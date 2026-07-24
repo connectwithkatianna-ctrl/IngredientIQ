@@ -115,3 +115,11 @@ Open `ios/IngredientIQ.xcodeproj` in Xcode. Requires:
 - Pursue MacrosFirst partner API access for after-the-fact log alerts
 - Keep expanding flavor-level product coverage
 - Verify the Chrome extension against MacrosFirst's current web app
+
+## License
+
+**This is not open-source software.** No one is permitted to use, copy, modify, or distribute any part of this repository without first notifying Katianna Koulakis and receiving permission to do so.
+
+To request permission or ask questions about usage, contact **connectwithkatianna@gmail.com**.
+
+See [LICENSE](LICENSE) for the full notice.
